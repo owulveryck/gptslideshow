@@ -17,7 +17,8 @@ func main() {
 	fromTemplate := flag.String("t", "", "ID of a template file")
 	flag.StringVar(&presentationId, "id", "", "ID of the slide to update, empty means create a new one")
 	prompt := flag.String("prompt", "Convert the following Markdown text into an array of structured slides. Each slide should have a title, a subtitle, and a body:", "The prompt")
-	filename := flag.String("content", "./testdata/article.md", "The content file")
+	textfile := flag.String("content", "", "The content file")
+	audiofile := flag.String("audio", "", "The audio file in mp3")
 
 	flag.Parse()
 	ctx := context.Background()
@@ -43,10 +44,20 @@ func main() {
 		log.Fatalf("Unable to retrieve Slides client: %v", err)
 	}
 
+	var content []byte
 	// Read content file
-	content, err := os.ReadFile(*filename)
-	if err != nil {
-		log.Fatal(err)
+	if *textfile != "" {
+		content, err = os.ReadFile(*textfile)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	if *audiofile != "" {
+		cont, err := getAudioFromFile(context.Background(), *audiofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		content = []byte(cont)
 	}
 
 	// Handle template copy if specified
