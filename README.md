@@ -10,7 +10,8 @@ GoSlideShow is a proof-of-concept (POC) command-line tool written in Go. It auto
 
 ## Demo
 
-demo.mov
+[demo.mov
+](https://github.com/owulveryck/gptslideshow/raw/refs/heads/main/demo.mov)
 
 ## Prerequisites
 
