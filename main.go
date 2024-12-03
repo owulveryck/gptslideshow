@@ -16,6 +16,7 @@ func main() {
 	var presentationId string
 	fromTemplate := flag.String("t", "", "ID of a template file")
 	flag.StringVar(&presentationId, "id", "", "ID of the slide to update, empty means create a new one")
+	prompt := flag.String("prompt", "Convert the following Markdown text into an array of structured slides. Each slide should have a title, a subtitle, and a body:", "The prompt")
 	filename := flag.String("content", "./testdata/article.md", "The content file")
 
 	flag.Parse()
@@ -62,7 +63,7 @@ func main() {
 	}
 
 	// Generate slides from content
-	presentationData, err := GenerateSlides(ctx, content)
+	presentationData, err := GenerateSlides(ctx, *prompt, content)
 	if err != nil {
 		log.Fatal(err)
 	}

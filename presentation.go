@@ -37,7 +37,7 @@ func GenerateSchema[T any]() interface{} {
 var SlideResponseSchema = GenerateSchema[Presentation]()
 
 // GenerateSlides generates a presentation from Markdown content
-func GenerateSlides(ctx context.Context, content []byte) (*Presentation, error) {
+func GenerateSlides(ctx context.Context, preprompt string, content []byte) (*Presentation, error) {
 	client := openai.NewClient()
 	schemaParam := openai.ResponseFormatJSONSchemaJSONSchemaParam{
 		Name:        openai.F("presentation"),
@@ -47,10 +47,9 @@ func GenerateSlides(ctx context.Context, content []byte) (*Presentation, error) 
 	}
 
 	// Prompt to guide the model
-	prompt := fmt.Sprintf(`Convert the following Markdown text into an array of structured slides.
-Each slide should have a title, a subtitle, and a body:
+	prompt := fmt.Sprintf(preprompt+`
 
-%s`, string(content))
+		%s`, string(content))
 	log.Printf("\n\nPrompting with: %s ...\n\n", prompt[:300])
 
 	// Query OpenAI API for validation or enhancement (optional)
