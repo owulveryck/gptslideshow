@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	drive "google.golang.org/api/drive/v3"
 	slides "google.golang.org/api/slides/v1"
@@ -20,8 +21,95 @@ func CopyTemplate(ctx context.Context, driveSrv *drive.Service, templatePresenta
 	return copiedFile.Id, nil
 }
 
-// CreateSlide creates a new slide in the presentation.
-func CreateSlide(ctx context.Context, srv *slides.Service, presentationId string, slide Slide) error {
+// CreateChapter creates a new slide in the presentation.
+func CreateChapter(ctx context.Context, srv *slides.Service, presentationId string, slide Slide) error {
+	createSlideRequests := []*slides.Request{
+		{
+			CreateSlide: &slides.CreateSlideRequest{
+				SlideLayoutReference: &slides.LayoutReference{
+					LayoutId: "g2ac55f3490c_0_1010",
+				},
+			},
+		},
+	}
+
+	createSlideResponse, err := srv.Presentations.BatchUpdate(presentationId, &slides.BatchUpdatePresentationRequest{
+		Requests: createSlideRequests,
+	}).Context(ctx).Do()
+	if err != nil {
+		return fmt.Errorf("failed to create slide: %v", err)
+	}
+
+	var newSlideID string
+	for _, reply := range createSlideResponse.Replies {
+		if reply.CreateSlide != nil {
+			newSlideID = reply.CreateSlide.ObjectId
+			break
+		}
+	}
+
+	if newSlideID == "" {
+		return fmt.Errorf("failed to retrieve new slide ID")
+	}
+
+	presentation, err := srv.Presentations.Get(presentationId).Context(ctx).Do()
+	if err != nil {
+		return fmt.Errorf("failed to retrieve presentation: %v", err)
+	}
+
+	var titlePlaceholderID, bodyPlaceholderID string
+	for _, slide := range presentation.Slides {
+		if slide.ObjectId == newSlideID {
+			for _, element := range slide.PageElements {
+				if element.Shape != nil && element.Shape.Placeholder != nil {
+					switch element.Shape.Placeholder.Type {
+					case "TITLE":
+						titlePlaceholderID = element.ObjectId
+					case "BODY":
+						bodyPlaceholderID = element.ObjectId
+					}
+				}
+			}
+			break
+		}
+	}
+
+	if titlePlaceholderID == "" || bodyPlaceholderID == "" {
+		return fmt.Errorf("failed to find placeholders on the new slide")
+	}
+
+	textRequests := []*slides.Request{
+		{
+			InsertText: &slides.InsertTextRequest{
+				ObjectId:       titlePlaceholderID,
+				InsertionIndex: 0,
+				Text:           slide.Title,
+			},
+		},
+		{
+			InsertText: &slides.InsertTextRequest{
+				ObjectId:       bodyPlaceholderID,
+				InsertionIndex: 0,
+				Text:           strconv.Itoa(chapter),
+			},
+		},
+	}
+
+	_, err = srv.Presentations.BatchUpdate(presentationId, &slides.BatchUpdatePresentationRequest{
+		Requests: textRequests,
+	}).Context(ctx).Do()
+	if err != nil {
+		return fmt.Errorf("failed to insert text: %v", err)
+	}
+	/*
+		err = AddSpeakerNote(srv, presentationId, newSlideID, slide.Body)
+		if err != nil {
+			return fmt.Errorf("failed to insert note: %v", err)
+		}
+	*/
+	return nil
+} // CreateSlideTitleSubtitleBody creates a new slide in the presentation.
+func CreateSlideTitleSubtitleBody(ctx context.Context, srv *slides.Service, presentationId string, slide Slide) error {
 	createSlideRequests := []*slides.Request{
 		{
 			CreateSlide: &slides.CreateSlideRequest{

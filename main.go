@@ -12,11 +12,27 @@ import (
 	slides "google.golang.org/api/slides/v1"
 )
 
+var chapter int
+
 func main() {
 	var presentationId string
 	fromTemplate := flag.String("t", "", "ID of a template file")
 	flag.StringVar(&presentationId, "id", "", "ID of the slide to update, empty means create a new one")
-	prompt := flag.String("prompt", "Convert the following Markdown text into an array of structured slides. Each slide should have a title, a subtitle, and a body:", "The prompt")
+	prompt := flag.String("prompt", `Convert the following text into an array of structured slides. 
+		Each slide should have a title, a subtitle, and a body; 
+
+		You can also generate chapters between a set of content slides. 
+		If the slide is a chapter, the body should contain a complete description of the content of the chapter usable to generate a picture to illustrate. 
+
+		If it is a chapter, the field 'chapter' must be set to true. For the content slides the body should be very complete. 
+
+		Each paragraph is separated by two newlines. 
+
+		Find the corresponding organisation to expose the most important messages. 
+
+		Also generate an executive summary in the first slide:
+
+		`, "The prompt")
 	textfile := flag.String("content", "", "The content file")
 	audiofile := flag.String("audio", "", "The audio file in mp3")
 
@@ -82,9 +98,17 @@ func main() {
 	log.Println("Generating slides...")
 	for i, slide := range presentationData.Slides {
 		log.Printf("Slide %v: %v", i, slide.Title)
-		err = CreateSlide(ctx, slidesSrv, presentationId, slide)
-		if err != nil {
-			log.Fatal(err)
+		if slide.Chapter {
+			chapter++
+			err = CreateChapter(ctx, slidesSrv, presentationId, slide)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			err = CreateSlideTitleSubtitleBody(ctx, slidesSrv, presentationId, slide)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 

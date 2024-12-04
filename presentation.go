@@ -20,7 +20,8 @@ type Presentation struct {
 type Slide struct {
 	Title    string `json:"title" jsonschema_description:"The title of the slide"`
 	Subtitle string `json:"subtitle" jsonschema_description:"The subtitle of the slide"`
-	Body     string `json:"body" jsonschema_description:"The main content of the slide"`
+	Body     string `json:"body" jsonschema_description:"The main content of the slide or the description of the chapter"`
+	Chapter  bool   `json:"chapter" jsonschema_description:"A boolean to indicate if this slides introduces a new chapter"`
 }
 
 // GenerateSchema generates the JSON schema for a given type
@@ -50,7 +51,7 @@ func GenerateSlides(ctx context.Context, preprompt string, content []byte) (*Pre
 	prompt := fmt.Sprintf(preprompt+`
 
 		%s`, string(content))
-	log.Printf("\n\nPrompting with: %s ...\n\n", prompt[:300])
+	log.Printf("\n\nPrompting with: %s ...\n\n", prompt[:500])
 
 	// Query OpenAI API for validation or enhancement (optional)
 	chat, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{

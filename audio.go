@@ -23,7 +23,7 @@ func getAudioFromFile(ctx context.Context, audiofile string) (string, error) {
 	}
 	defer f.Close()
 	resp, err := client.CreateTranscription(ctx, &audio.CreateTranscriptionParams{
-		Language:    "en",
+		Language:    "fr",
 		Audio:       f,
 		AudioFormat: "mp3",
 	})
