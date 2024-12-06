@@ -12,7 +12,7 @@ import (
 )
 
 func generateSlides(ctx context.Context, openaiClient *ai.AI, prompt string, content []byte) *structure.Presentation {
-	presentationData, err := ai.NewAI().GenerateContentFromText(ctx, prompt, content)
+	presentationData, err := openaiClient.GenerateContentFromText(ctx, prompt, content)
 	if err != nil {
 		log.Fatal(err)
 	}
