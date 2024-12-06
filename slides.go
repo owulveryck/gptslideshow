@@ -2,113 +2,83 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
+	"os"
 
 	drive "google.golang.org/api/drive/v3"
 	slides "google.golang.org/api/slides/v1"
+
+	"github.com/owulveryck/gptslideshow/internal/ai"
+	"github.com/owulveryck/gptslideshow/internal/driveutils"
+	"github.com/owulveryck/gptslideshow/internal/slidesutils"
+	"github.com/owulveryck/gptslideshow/internal/structure"
 )
 
-// CopyTemplate copies a presentation template and returns the new presentation ID.
-func CopyTemplate(ctx context.Context, driveSrv *drive.Service, templatePresentationId string) (string, error) {
-	copyTitle := "gptSlides"
-	copyRequest := &drive.File{Name: copyTitle}
-	copiedFile, err := driveSrv.Files.Copy(templatePresentationId, copyRequest).Context(ctx).Do()
+func generateSlides(ctx context.Context, openaiClient *ai.AI, prompt string, content []byte) *structure.Presentation {
+	presentationData, err := openaiClient.GenerateContentFromText(ctx, prompt, content)
 	if err != nil {
-		return "", fmt.Errorf("unable to copy presentation: %v", err)
+		log.Fatal(err)
 	}
-	fmt.Printf("Copied presentation ID: %s\n", copiedFile.Id)
-	return copiedFile.Id, nil
+	enc := json.NewEncoder(os.Stdout)
+	enc.Encode(presentationData)
+
+	return presentationData
 }
 
-// CreateSlide creates a new slide in the presentation.
-func CreateSlide(ctx context.Context, srv *slides.Service, presentationId string, slide Slide) error {
-	createSlideRequests := []*slides.Request{
-		{
-			CreateSlide: &slides.CreateSlideRequest{
-				SlideLayoutReference: &slides.LayoutReference{
-					LayoutId: "g2ac55f3490c_0_1006", // Replace with your custom layout ID
-				},
-			},
-		},
-	}
-
-	createSlideResponse, err := srv.Presentations.BatchUpdate(presentationId, &slides.BatchUpdatePresentationRequest{
-		Requests: createSlideRequests,
-	}).Context(ctx).Do()
+func createPresentationSlides(ctx context.Context, slidesSrv *slides.Service, driveSrv *drive.Service, openaiClient *ai.AI, withImages bool, presentationId string, presentationData *structure.Presentation) error {
+	builder, err := slidesutils.NewBuilder(ctx, slidesSrv, presentationId)
 	if err != nil {
-		return fmt.Errorf("failed to create slide: %v", err)
+		return err
 	}
 
-	var newSlideID string
-	for _, reply := range createSlideResponse.Replies {
-		if reply.CreateSlide != nil {
-			newSlideID = reply.CreateSlide.ObjectId
-			break
-		}
-	}
+	for i, slide := range presentationData.Slides {
+		log.Printf("Slide %v: %v", i, slide.Title)
+		if slide.Chapter {
+			err = builder.CreateChapter(ctx, slide)
+			if err != nil {
+				return err
+			}
+			if withImages {
+				// Generate the illustration
+				img, err := openaiClient.GenerateImageFromText(ctx, slide.Body)
+				if err != nil {
+					return err
+				}
+				imageUrl, err := driveutils.UploadImage(ctx, driveSrv, img, slide.Title+".png")
+				if err != nil {
+					return err
+				}
+				var imageWidth, imageHeight, slideWidth, slideHeight, translateX, translateY float64
+				// Dimensions in EMUs (e.g., 3x3 inches)
+				imageWidth = 2743200  // 3 inches
+				imageHeight = 2743200 // 3 inches
 
-	if newSlideID == "" {
-		return fmt.Errorf("failed to retrieve new slide ID")
-	}
+				// Slide dimensions in EMUs
+				slideWidth = 9144000  // 10 inches
+				slideHeight = 6858000 // 7.5 inches
 
-	presentation, err := srv.Presentations.Get(presentationId).Context(ctx).Do()
-	if err != nil {
-		return fmt.Errorf("failed to retrieve presentation: %v", err)
-	}
+				// Calculate position to center the image
+				translateX = (slideWidth - imageWidth) / 2
+				translateY = (slideHeight - imageHeight) / 2
+				translateX = 1213950
+				translateY = 1659800
 
-	var titlePlaceholderID, subtitlePlaceholderID, bodyPlaceholderID string
-	for _, slide := range presentation.Slides {
-		if slide.ObjectId == newSlideID {
-			for _, element := range slide.PageElements {
-				if element.Shape != nil && element.Shape.Placeholder != nil {
-					switch element.Shape.Placeholder.Type {
-					case "TITLE":
-						titlePlaceholderID = element.ObjectId
-					case "BODY":
-						bodyPlaceholderID = element.ObjectId
-					case "SUBTITLE":
-						subtitlePlaceholderID = element.ObjectId
-					}
+				// Insert the image centered on the current slide
+				err = builder.InsertImage(ctx, imageUrl, imageWidth, imageHeight, translateX, translateY)
+				if err != nil {
+					return err
 				}
 			}
-			break
+		} else {
+			err = builder.CreateSlideTitleSubtitleBody(ctx, slide)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
-	if titlePlaceholderID == "" || bodyPlaceholderID == "" || subtitlePlaceholderID == "" {
-		return fmt.Errorf("failed to find placeholders on the new slide")
-	}
-
-	textRequests := []*slides.Request{
-		{
-			InsertText: &slides.InsertTextRequest{
-				ObjectId:       subtitlePlaceholderID,
-				InsertionIndex: 0,
-				Text:           slide.Subtitle,
-			},
-		},
-		{
-			InsertText: &slides.InsertTextRequest{
-				ObjectId:       titlePlaceholderID,
-				InsertionIndex: 0,
-				Text:           slide.Title,
-			},
-		},
-		{
-			InsertText: &slides.InsertTextRequest{
-				ObjectId:       bodyPlaceholderID,
-				InsertionIndex: 0,
-				Text:           slide.Body,
-			},
-		},
-	}
-
-	_, err = srv.Presentations.BatchUpdate(presentationId, &slides.BatchUpdatePresentationRequest{
-		Requests: textRequests,
-	}).Context(ctx).Do()
-	if err != nil {
-		return fmt.Errorf("failed to insert text: %v", err)
-	}
-
+	fmt.Println("New presentation created and modified successfully.")
 	return nil
 }
