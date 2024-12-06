@@ -10,6 +10,7 @@ import (
 type Config struct {
 	OpenAIModel   string `envconfig:"OPENAI_MODEL" default:"gpt-4o-2024-08-06"`
 	AudioLanguage string `envconfig:"AUDIO_LANGUAGE" default:"en"`
+	WithImage     bool   `envconfig:"WITH_IMAGE" default:"false"`
 }
 
 var ConfigInstance *Config

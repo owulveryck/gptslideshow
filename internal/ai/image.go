@@ -24,11 +24,11 @@ import (
 func (ai *AI) GenerateImageFromText(ctx context.Context, prompt string) (image.Image, error) {
 	// Request image generation from OpenAI's API with specified parameters.
 	response, err := ai.Client.Images.Generate(ctx, openai.ImageGenerateParams{
-		Prompt:         openai.String(prompt),
+		Prompt:         openai.String("generate an illustration based on those elements, the illustration should not contain any text: \n\n" + prompt),
 		Model:          openai.F(openai.ImageModelDallE3),
 		ResponseFormat: openai.F(openai.ImageGenerateParamsResponseFormatB64JSON),
 		N:              openai.Int(1),
-		Size:           openai.F(openai.ImageGenerateParamsSize256x256),
+		Size:           openai.F(openai.ImageGenerateParamsSize1024x1024),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate image: %w", err)
