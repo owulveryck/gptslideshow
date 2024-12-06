@@ -1,4 +1,4 @@
-package main
+package ai
 
 import (
 	"context"
@@ -9,13 +9,11 @@ import (
 	"github.com/openai/openai-go"
 
 	"github.com/owulveryck/gptslideshow/config"
-	"github.com/owulveryck/gptslideshow/internal/ai"
 	"github.com/owulveryck/gptslideshow/internal/structure"
 )
 
-// GenerateSlides generates a presentation from Markdown content
-func GenerateSlides(ctx context.Context, preprompt string, content []byte) (*structure.Presentation, error) {
-	client := ai.NewAI()
+// GenerateContentFromText generates a presentation from Markdown content
+func (ai *AI) GenerateContentFromText(ctx context.Context, preprompt string, content []byte) (*structure.Presentation, error) {
 	schemaParam := openai.ResponseFormatJSONSchemaJSONSchemaParam{
 		Name:        openai.F("presentation"),
 		Description: openai.F("A structured presentation from content"),
@@ -30,7 +28,7 @@ func GenerateSlides(ctx context.Context, preprompt string, content []byte) (*str
 	log.Printf("\n\nPrompting with: %s ...\n\n", prompt[:500])
 
 	// Query OpenAI API for validation or enhancement (optional)
-	chat, err := client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+	chat, err := ai.Client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
 		Messages: openai.F([]openai.ChatCompletionMessageParamUnion{
 			openai.UserMessage(prompt),
 		}),

@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+
+	"github.com/owulveryck/gptslideshow/internal/ai"
 )
 
 func main() {
@@ -14,13 +16,14 @@ func main() {
 	}
 
 	ctx := context.Background()
+	openaiClient := ai.NewAI()
 
 	// Initialize Google services
 	client := initGoogleClient()
 	slidesSrv := initSlidesService(client)
 
 	// Read content from file or audio
-	content := readContent(ctx, textfile, audiofile)
+	content := readContent(ctx, openaiClient, textfile, audiofile)
 
 	// Handle template copy if specified
 	if *fromTemplate != "" {
@@ -30,7 +33,7 @@ func main() {
 	}
 
 	// Generate slides from content
-	presentationData := generateSlides(ctx, *prompt, content)
+	presentationData := generateSlides(ctx, openaiClient, *prompt, content)
 
 	// Create presentation slides
 	createPresentationSlides(ctx, slidesSrv, *presentationId, presentationData)

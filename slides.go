@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/owulveryck/gptslideshow/internal/ai"
 	"github.com/owulveryck/gptslideshow/internal/slidesutils"
 	"github.com/owulveryck/gptslideshow/internal/structure"
 	slides "google.golang.org/api/slides/v1"
 )
 
-func generateSlides(ctx context.Context, prompt string, content []byte) *structure.Presentation {
-	presentationData, err := GenerateSlides(ctx, prompt, content)
+func generateSlides(ctx context.Context, openaiClient *ai.AI, prompt string, content []byte) *structure.Presentation {
+	presentationData, err := ai.NewAI().GenerateContentFromText(ctx, prompt, content)
 	if err != nil {
 		log.Fatal(err)
 	}

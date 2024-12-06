@@ -4,9 +4,11 @@ import (
 	"context"
 	"log"
 	"os"
+
+	"github.com/owulveryck/gptslideshow/internal/ai"
 )
 
-func readContent(ctx context.Context, textfile, audiofile *string) []byte {
+func readContent(ctx context.Context, openaiClient *ai.AI, textfile, audiofile *string) []byte {
 	var content []byte
 	var err error
 
@@ -18,7 +20,7 @@ func readContent(ctx context.Context, textfile, audiofile *string) []byte {
 	}
 
 	if *audiofile != "" {
-		b, err := getAudioFromFile(ctx, *audiofile)
+		b, err := openaiClient.ExtractTextFromAudio(ctx, *audiofile)
 		if err != nil {
 			log.Fatal(err)
 		}
