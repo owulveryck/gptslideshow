@@ -7,6 +7,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/owulveryck/gptslideshow/config"
+	"github.com/owulveryck/gptslideshow/internal/gcputils"
+	"github.com/owulveryck/gptslideshow/internal/slidesutils"
 	"golang.org/x/oauth2/google"
 	drive "google.golang.org/api/drive/v3"
 	slides "google.golang.org/api/slides/v1"
@@ -17,6 +20,8 @@ var chapter int
 func main() {
 	var presentationId string
 	fromTemplate := flag.String("t", "", "ID of a template file")
+	helpFlag := flag.Bool("h", false, "help")
+
 	flag.StringVar(&presentationId, "id", "", "ID of the slide to update, empty means create a new one")
 	prompt := flag.String("prompt", `Convert the following text into an array of structured slides. 
 		Each slide should have a title, a subtitle, and a body; 
@@ -37,6 +42,17 @@ func main() {
 	audiofile := flag.String("audio", "", "The audio file in mp3")
 
 	flag.Parse()
+	if *helpFlag {
+		fmt.Println("Usage:")
+		fmt.Println("  [flags]")
+
+		fmt.Println("\nFlags:")
+		flag.PrintDefaults()
+
+		fmt.Println("\nEnvironment Variables:")
+		config.Help()
+		return
+	}
 	ctx := context.Background()
 
 	// Load client secret file
@@ -52,7 +68,7 @@ func main() {
 	}
 
 	// Get authenticated client
-	client := GetClient(config)
+	client := gcputils.GetClient(config)
 
 	// Initialize Google Slides service
 	slidesSrv, err := slides.New(client)
@@ -83,7 +99,7 @@ func main() {
 			log.Fatalf("Unable to retrieve Drive client: %v", err)
 		}
 
-		presentationId, err = CopyTemplate(ctx, driveSrv, *fromTemplate)
+		presentationId, err = slidesutils.CopyTemplate(ctx, driveSrv, *fromTemplate)
 		if err != nil {
 			log.Fatalf("Unable to copy presentation: %v", err)
 		}
@@ -100,12 +116,12 @@ func main() {
 		log.Printf("Slide %v: %v", i, slide.Title)
 		if slide.Chapter {
 			chapter++
-			err = CreateChapter(ctx, slidesSrv, presentationId, slide)
+			err = slidesutils.CreateChapter(ctx, slidesSrv, presentationId, slide)
 			if err != nil {
 				log.Fatal(err)
 			}
 		} else {
-			err = CreateSlideTitleSubtitleBody(ctx, slidesSrv, presentationId, slide)
+			err = slidesutils.CreateSlideTitleSubtitleBody(ctx, slidesSrv, presentationId, slide)
 			if err != nil {
 				log.Fatal(err)
 			}

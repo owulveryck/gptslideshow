@@ -9,6 +9,8 @@ import (
 
 	openai "github.com/rakyll/openai-go"
 	"github.com/rakyll/openai-go/audio"
+
+	"github.com/owulveryck/gptslideshow/config"
 )
 
 func getAudioFromFile(ctx context.Context, audiofile string) (string, error) {
@@ -23,7 +25,7 @@ func getAudioFromFile(ctx context.Context, audiofile string) (string, error) {
 	}
 	defer f.Close()
 	resp, err := client.CreateTranscription(ctx, &audio.CreateTranscriptionParams{
-		Language:    "fr",
+		Language:    config.ConfigInstance.AudioLanguage,
 		Audio:       f,
 		AudioFormat: "mp3",
 	})

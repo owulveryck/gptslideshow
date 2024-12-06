@@ -1,10 +1,11 @@
-package main
+package slidesutils
 
 import (
 	"context"
 	"fmt"
 	"strconv"
 
+	"github.com/owulveryck/gptslideshow/internal/structure"
 	drive "google.golang.org/api/drive/v3"
 	slides "google.golang.org/api/slides/v1"
 )
@@ -22,7 +23,7 @@ func CopyTemplate(ctx context.Context, driveSrv *drive.Service, templatePresenta
 }
 
 // CreateChapter creates a new slide in the presentation.
-func CreateChapter(ctx context.Context, srv *slides.Service, presentationId string, slide Slide) error {
+func CreateChapter(ctx context.Context, srv *slides.Service, presentationId string, slide structure.Slide) error {
 	createSlideRequests := []*slides.Request{
 		{
 			CreateSlide: &slides.CreateSlideRequest{
@@ -90,9 +91,35 @@ func CreateChapter(ctx context.Context, srv *slides.Service, presentationId stri
 			InsertText: &slides.InsertTextRequest{
 				ObjectId:       bodyPlaceholderID,
 				InsertionIndex: 0,
-				Text:           strconv.Itoa(chapter),
+				Text:           strconv.Itoa(0), // TODO
 			},
 		},
+		/*
+			{
+				CreateImage: &slides.CreateImageRequest{
+					Url: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Sinclair_QL_256x256_mode_example_image.png",
+					ElementProperties: &slides.PageElementProperties{
+						Size: &slides.Size{
+							Height: &slides.Dimension{
+								Magnitude: 3000000,
+								Unit:      "EMU",
+							},
+							Width: &slides.Dimension{
+								Magnitude: 3000000,
+								Unit:      "EMU",
+							},
+						},
+						Transform: &slides.AffineTransform{
+							Unit:       "EMU",
+							ScaleX:     0.8516,
+							ScaleY:     0.8516,
+							TranslateX: 1402500,
+							TranslateY: 1659800,
+						},
+					},
+				},
+			},
+		*/
 	}
 
 	_, err = srv.Presentations.BatchUpdate(presentationId, &slides.BatchUpdatePresentationRequest{
@@ -109,7 +136,7 @@ func CreateChapter(ctx context.Context, srv *slides.Service, presentationId stri
 	*/
 	return nil
 } // CreateSlideTitleSubtitleBody creates a new slide in the presentation.
-func CreateSlideTitleSubtitleBody(ctx context.Context, srv *slides.Service, presentationId string, slide Slide) error {
+func CreateSlideTitleSubtitleBody(ctx context.Context, srv *slides.Service, presentationId string, slide structure.Slide) error {
 	createSlideRequests := []*slides.Request{
 		{
 			CreateSlide: &slides.CreateSlideRequest{

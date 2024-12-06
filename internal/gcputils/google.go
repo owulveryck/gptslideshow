@@ -1,4 +1,4 @@
-package main
+package gcputils
 
 import (
 	"context"

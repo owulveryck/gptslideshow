@@ -7,9 +7,10 @@ GoSlideShow is a proof-of-concept (POC) command-line tool written in Go. It auto
 - **Generate Slides from Markdown**: Convert Markdown files into structured Google Slides presentations.
 - **Template Support**: Create presentations based on a specified Google Slides template.
 - **OAuth2 Authentication**: Uses Google's OAuth2 for secure API access.
+- **Structured Output**: The model internally uses structured output to organize content effectively. For more information, see [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
+- **Audio Input Support**: It is possible to use audio input that is converted via Whisper during a call to OpenAI.
 
 ## Demo
-
 
 https://github.com/user-attachments/assets/139fadb1-075c-4e40-9174-5cfa0de737b6
 
@@ -64,12 +65,10 @@ go run main.go -content <path-to-markdown-file> [-t <template-id>] [-id <present
 ## File Structure
 
 - **main.go**: The entry point of the application. It handles command-line arguments, initializes services, and orchestrates the creation of slides.
-
 - **presentation.go**: Contains data structures and functions for generating presentations from Markdown content. It uses OpenAI's API to convert content into slide format.
-
 - **google_auth.go**: Manages OAuth2 authentication, including token storage and retrieval. It ensures secure access to Google APIs.
-
 - **slides_operations.go**: Contains functions for interacting with Google Slides, such as copying templates and creating new slides. It handles the insertion of content into slide placeholders.
+- **util/**: Subdirectory containing utilities for querying Google Slides to retrieve information from templates, such as layout IDs for custom templates.
 
 ## Authentication
 
