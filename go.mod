@@ -1,6 +1,6 @@
 module github.com/owulveryck/gptslideshow
 
-go 1.23.2
+go 1.23
 
 require (
 	github.com/invopop/jsonschema v0.12.0
