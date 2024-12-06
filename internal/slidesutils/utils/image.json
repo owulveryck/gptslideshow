@@ -1,0 +1,59 @@
+{
+  "description": "Fitxer:Icon Einstein 256x256.png - Viquipèdia, l'enciclopèdia lliure",
+  "image": {
+    "contentUrl": "https://lh7-rt.googleusercontent.com/slidesz/AGV_vUceco2p_T-JLvvFEHQSNVVOrTN2MUr_LlEkGxN_ZC1RmbK_2a7qR0_PnrQ0RkbUs-bXDjhbOae6korM0GwvIEI1WnFBrdSQZrPc4LxxnxD2pSpC-cfjfF6F7eNCOR8TAFQ88xz5aQ=s2048?key=jDwBzKcA_uO5uwwaCBnaW6_9",
+    "imageProperties": {
+      "outline": {
+        "dashStyle": "SOLID",
+        "outlineFill": {
+          "solidFill": {
+            "alpha": 1,
+            "color": {
+              "themeColor": "DARK2"
+            }
+          }
+        },
+        "propertyState": "NOT_RENDERED",
+        "weight": {
+          "magnitude": 9525,
+          "unit": "EMU"
+        }
+      },
+      "shadow": {
+        "alignment": "BOTTOM_LEFT",
+        "alpha": 1,
+        "blurRadius": {
+          "unit": "EMU"
+        },
+        "color": {
+          "rgbColor": {}
+        },
+        "propertyState": "NOT_RENDERED",
+        "transform": {
+          "scaleX": 1,
+          "scaleY": 1,
+          "unit": "EMU"
+        },
+        "type": "OUTER"
+      }
+    }
+  },
+  "objectId": "g31c490924f3_0_2",
+  "size": {
+    "height": {
+      "magnitude": 6400,
+      "unit": "EMU"
+    },
+    "width": {
+      "magnitude": 6400,
+      "unit": "EMU"
+    }
+  },
+  "transform": {
+    "scaleX": 402.3477,
+    "scaleY": 402.3477,
+    "translateX": 1368324.9975,
+    "translateY": 1659800,
+    "unit": "EMU"
+  }
+}
