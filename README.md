@@ -17,7 +17,7 @@ https://github.com/user-attachments/assets/139fadb1-075c-4e40-9174-5cfa0de737b6
 
 ## Prerequisites
 
-- Go 1.18 or later
+- Go 1.21 or later
 - Google API credentials (`credentials.json`)
 - Access to the Google Slides and Drive APIs
 - **OpenAI API Key**: Set the `OPENAI_API_KEY` environment variable with your OpenAI API key.
