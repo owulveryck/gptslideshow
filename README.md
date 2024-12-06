@@ -1,14 +1,15 @@
-# GoSlideShow
+# gptslideshow
 
 GoSlideShow is a proof-of-concept (POC) command-line tool written in Go. It automates the creation and modification of Google Slides presentations by leveraging Google APIs and OpenAI's language model. The goal is to demonstrate how to interact with an AI based on large language models (LLMs) to generate structured content.
 
 ## Features
 
-- **Generate Slides from Markdown**: Convert Markdown files into structured Google Slides presentations.
+- **Generate Slides from Markdown or Audio**: Convert Markdown files or audio inputs into structured Google Slides presentations.
 - **Template Support**: Create presentations based on a specified Google Slides template.
 - **OAuth2 Authentication**: Uses Google's OAuth2 for secure API access.
 - **Structured Output**: The model internally uses structured output to organize content effectively. For more information, see [Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs).
-- **Audio Input Support**: It is possible to use audio input that is converted via Whisper during a call to OpenAI.
+- **Audio Input Support**: Convert audio input via Whisper during a call to OpenAI.
+- **Image Generation**: Optionally generate images for chapter slides using OpenAI's image generation capabilities.
 
 ## Demo
 
@@ -55,20 +56,29 @@ https://github.com/user-attachments/assets/139fadb1-075c-4e40-9174-5cfa0de737b6
 Run the program with the following command:
 
 ```bash
-go run main.go -content <path-to-markdown-file> [-t <template-id>] [-id <presentation-id>]
+go run main.go -content <path-to-markdown-file> [-t <template-id>] [-id <presentation-id>] [-audio <path-to-audio-file>]
 ```
 
 - `-content`: Path to the Markdown file to convert into slides.
 - `-t`: (Optional) ID of the Google Slides template to use.
 - `-id`: (Optional) ID of an existing presentation to update.
+- `-audio`: (Optional) Path to the audio file to convert into slides.
 
 ## File Structure
 
 - **main.go**: The entry point of the application. It handles command-line arguments, initializes services, and orchestrates the creation of slides.
-- **presentation.go**: Contains data structures and functions for generating presentations from Markdown content. It uses OpenAI's API to convert content into slide format.
+- **presentation.go**: Contains data structures and functions for generating presentations from Markdown or audio content. It uses OpenAI's API to convert content into slide format.
 - **google_auth.go**: Manages OAuth2 authentication, including token storage and retrieval. It ensures secure access to Google APIs.
 - **slides_operations.go**: Contains functions for interacting with Google Slides, such as copying templates and creating new slides. It handles the insertion of content into slide placeholders.
 - **util/**: Subdirectory containing utilities for querying Google Slides to retrieve information from templates, such as layout IDs for custom templates.
+
+## Internal Packages
+
+- **internal/ai**: Manages interactions with OpenAI's API, including text and image generation.
+- **internal/gcputils**: Provides utilities for Google Cloud Platform operations, including authentication.
+- **internal/driveutils**: Contains functions for handling Google Drive operations, such as uploading images.
+- **internal/slidesutils**: Provides utilities for managing Google Slides operations, including slide creation and modification.
+- **internal/structure**: Defines the data structures used for organizing slide content.
 
 ## Authentication
 
