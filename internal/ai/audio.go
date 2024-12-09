@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/openai/openai-go"
+	"github.com/owulveryck/gptslideshow/config"
 )
 
 // ExtractTextFromAudio extracts text from an audio file using OpenAI's Whisper model.
@@ -29,8 +30,9 @@ func (ai *AI) ExtractTextFromAudio(ctx context.Context, filePath string) (string
 
 	// Request transcription from OpenAI's API using the Whisper model.
 	transcription, err := ai.Client.Audio.Transcriptions.New(ctx, openai.AudioTranscriptionNewParams{
-		Model: openai.F(openai.AudioModelWhisper1),
-		File:  openai.F[io.Reader](file),
+		Model:    openai.F(openai.AudioModelWhisper1),
+		File:     openai.F[io.Reader](file),
+		Language: openai.F(config.ConfigInstance.AudioLanguage),
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to transcribe audio: %w", err)
