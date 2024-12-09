@@ -1,4 +1,4 @@
-package slidesutils
+package mytemplate
 
 import (
 	"context"

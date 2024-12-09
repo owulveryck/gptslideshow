@@ -5,7 +5,7 @@ including creating and managing slides programmatically using the Google Slides 
 This package is intended to streamline common tasks such as creating slides, managing chapters,
 and interacting with Google Slides presentation objects.
 */
-package slidesutils
+package mytemplate
 
 import (
 	"context"
@@ -29,6 +29,8 @@ const (
 
 	// TitleSubtitleBody represents the layout ID for a slide with a title, subtitle, and body content.
 	TitleSubtitleBody = "g2ac55f3490c_0_1006"
+	// CoverLayout ...
+	CoverLayoutID = "g2ac55f3490c_0_1073"
 )
 
 // NewBuilder initializes a Builder instance for managing a Google Slides presentation.

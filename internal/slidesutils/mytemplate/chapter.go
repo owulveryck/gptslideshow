@@ -1,26 +1,27 @@
-package slidesutils
+package mytemplate
 
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/owulveryck/gptslideshow/internal/structure"
 	slides "google.golang.org/api/slides/v1"
 )
 
-// CreateSlideTitleSubtitleBody creates a new slide with a title, subtitle, and body content.
-// It uses the predefined layout for title, subtitle, and body.
+// CreateChapter creates a new chapter slide in the presentation.
+// It uses the predefined chapter layout and updates the slide with the chapter title and number.
 //
 // Parameters:
 //   - ctx: A context to manage request lifetime.
-//   - slide: A structure containing slide information such as title, subtitle, and body.
+//   - slide: A structure containing slide information such as title.
 //
 // Returns:
 //   - error: An error if the slide creation or text insertion fails.
-func (b *Builder) CreateSlideTitleSubtitleBody(ctx context.Context, slide structure.Slide) error {
-	// Use the CreateNewSlide method to create a new slide with the title, subtitle, and body layout.
-	if err := b.CreateNewSlide(ctx, TitleSubtitleBody); err != nil {
-		return fmt.Errorf("failed to create slide with title, subtitle, and body: %w", err)
+func (b *Builder) CreateChapter(ctx context.Context, slide structure.Slide) error {
+	// Use the CreateNewSlide method to create a new slide with the chapter layout.
+	if err := b.CreateNewSlide(ctx, ChapterLayoutId); err != nil {
+		return fmt.Errorf("failed to create chapter slide: %w", err)
 	}
 
 	// Ensure the current slide is set after creation.
@@ -28,27 +29,25 @@ func (b *Builder) CreateSlideTitleSubtitleBody(ctx context.Context, slide struct
 		return fmt.Errorf("current slide is not set after creation")
 	}
 
-	// Find placeholders for title, subtitle, and body in the newly created slide.
-	var titlePlaceholderID, subtitlePlaceholderID, bodyPlaceholderID string
+	// Find placeholders for title and body in the newly created slide.
+	var titlePlaceholderID, bodyPlaceholderID string
 	for _, element := range b.CurrentSlide.PageElements {
 		if element.Shape != nil && element.Shape.Placeholder != nil {
 			switch element.Shape.Placeholder.Type {
 			case "TITLE":
 				titlePlaceholderID = element.ObjectId
-			case "SUBTITLE":
-				subtitlePlaceholderID = element.ObjectId
 			case "BODY":
 				bodyPlaceholderID = element.ObjectId
 			}
 		}
 	}
 
-	// Check if all placeholders were found.
-	if titlePlaceholderID == "" || bodyPlaceholderID == "" || subtitlePlaceholderID == "" {
+	// Check if both placeholders were found.
+	if titlePlaceholderID == "" || bodyPlaceholderID == "" {
 		return fmt.Errorf("failed to find placeholders on the new slide")
 	}
 
-	// Prepare text requests to insert the title, subtitle, and body content.
+	// Prepare text requests to insert the chapter title and number.
 	textRequests := []*slides.Request{
 		{
 			InsertText: &slides.InsertTextRequest{
@@ -59,16 +58,9 @@ func (b *Builder) CreateSlideTitleSubtitleBody(ctx context.Context, slide struct
 		},
 		{
 			InsertText: &slides.InsertTextRequest{
-				ObjectId:       subtitlePlaceholderID,
-				InsertionIndex: 0,
-				Text:           slide.Subtitle,
-			},
-		},
-		{
-			InsertText: &slides.InsertTextRequest{
 				ObjectId:       bodyPlaceholderID,
 				InsertionIndex: 0,
-				Text:           slide.Body,
+				Text:           strconv.Itoa(b.CurrentChapter),
 			},
 		},
 	}
@@ -80,5 +72,7 @@ func (b *Builder) CreateSlideTitleSubtitleBody(ctx context.Context, slide struct
 		return fmt.Errorf("failed to insert text: %w", err)
 	}
 
+	// Increment the current chapter number after successful slide creation.
+	b.CurrentChapter++
 	return nil
 }

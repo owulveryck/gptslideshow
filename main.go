@@ -9,6 +9,7 @@ import (
 	"github.com/owulveryck/gptslideshow/config"
 	"github.com/owulveryck/gptslideshow/internal/ai"
 	"github.com/owulveryck/gptslideshow/internal/driveutils"
+	"github.com/owulveryck/gptslideshow/internal/slidesutils/mytemplate"
 )
 
 func main() {
@@ -32,20 +33,19 @@ func main() {
 	content := readContent(ctx, openaiClient, textfile, audiofile)
 
 	// Handle template copy if specified
+	driveSrv = initDriveService(client)
 	if *fromTemplate != "" {
-		driveSrv = initDriveService(client)
 		p := handleTemplateCopy(ctx, driveSrv, *fromTemplate)
 		presentationId = &p
-	}
-	if config.ConfigInstance.WithImage && driveSrv == nil {
-		driveSrv = initDriveService(client)
 	}
 
 	// Generate slides from content
 	presentationData := generateSlides(ctx, openaiClient, *prompt, content)
+	// Using mytemplate change to use yours
+	builder, err := mytemplate.NewBuilder(ctx, slidesSrv, *presentationId)
 
 	// Create presentation slides
-	err := createPresentationSlides(ctx, slidesSrv, driveSrv, openaiClient, config.ConfigInstance.WithImage, *presentationId, presentationData)
+	err = createPresentationSlides(ctx, builder, driveSrv, openaiClient, config.ConfigInstance.WithImage, presentationData)
 	if err != nil {
 		log.Fatal(err)
 	}

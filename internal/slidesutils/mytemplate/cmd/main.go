@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/owulveryck/gptslideshow/internal/gcputils"
-	"github.com/owulveryck/gptslideshow/internal/slidesutils"
+	"github.com/owulveryck/gptslideshow/internal/slidesutils/mytemplate"
 	"github.com/owulveryck/gptslideshow/internal/structure"
 	"golang.org/x/oauth2/google"
 	drive "google.golang.org/api/drive/v3"
@@ -44,7 +44,7 @@ func main() {
 	}
 
 	// Initialize the Builder
-	builder, err := slidesutils.NewBuilder(ctx, slidesSrv, presentationId)
+	builder, err := mytemplate.NewBuilder(ctx, slidesSrv, presentationId)
 	if err != nil {
 		log.Fatalf("Unable to create Builder: %v", err)
 	}
@@ -57,6 +57,10 @@ func main() {
 		Chapter:  false,
 	}
 
+	err = builder.CreateCover(ctx, "AA", "BB")
+	if err != nil {
+		log.Fatal(err)
+	}
 	// Create a slide with title, subtitle, and body
 	err = builder.CreateSlideTitleSubtitleBody(ctx, slide)
 	if err != nil {

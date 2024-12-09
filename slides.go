@@ -7,7 +7,6 @@ import (
 	"log"
 
 	drive "google.golang.org/api/drive/v3"
-	slides "google.golang.org/api/slides/v1"
 
 	"github.com/owulveryck/gptslideshow/internal/ai"
 	"github.com/owulveryck/gptslideshow/internal/driveutils"
@@ -30,8 +29,8 @@ func generateSlides(ctx context.Context, openaiClient *ai.AI, prompt string, con
 	return presentationData
 }
 
-func createPresentationSlides(ctx context.Context, slidesSrv *slides.Service, driveSrv *drive.Service, openaiClient *ai.AI, withImages bool, presentationId string, presentationData *structure.Presentation) error {
-	builder, err := slidesutils.NewBuilder(ctx, slidesSrv, presentationId)
+func createPresentationSlides(ctx context.Context, builder slidesutils.BuilderInterface, driveSrv *drive.Service, openaiClient *ai.AI, withImages bool, presentationData *structure.Presentation) error {
+	err := builder.CreateCover(ctx, presentationData.Title, presentationData.Subtitle)
 	if err != nil {
 		return err
 	}

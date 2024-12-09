@@ -4,8 +4,9 @@ import "github.com/invopop/jsonschema"
 
 // Presentation represents the entire presentation structure
 type Presentation struct {
-	Title  string  `json:"presentation_title" jsonschema_description:"The title of the presentation"`
-	Slides []Slide `json:"slides" jsonschema_description:"The content of the presentation"`
+	Title    string  `json:"presentation_title" jsonschema_description:"The title of the presentation"`
+	Subtitle string  `json:"presentation_subtitle" jsonschema_description:"The subtitle of the presentation"`
+	Slides   []Slide `json:"slides" jsonschema_description:"The content of the presentation"`
 }
 
 // Slide represents a single slide in the presentation
