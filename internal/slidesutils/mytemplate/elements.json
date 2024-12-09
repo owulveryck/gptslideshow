@@ -1,0 +1,463 @@
+{
+  "objectId": "SLIDES_API1557516005_1",
+  "shape": {
+    "placeholder": {
+      "parentObjectId": "g2ac55f3490c_0_1007",
+      "type": "BODY"
+    },
+    "shapeProperties": {
+      "autofit": {
+        "autofitType": "NONE",
+        "fontScale": 1
+      },
+      "outline": {
+        "propertyState": "INHERIT"
+      },
+      "shadow": {
+        "propertyState": "INHERIT"
+      },
+      "shapeBackgroundFill": {
+        "propertyState": "INHERIT"
+      }
+    },
+    "shapeType": "TEXT_BOX",
+    "text": {
+      "lists": {
+        "kix.imml3jaa7dey": {
+          "listId": "kix.imml3jaa7dey",
+          "nestingLevel": {
+            "0": {
+              "bulletStyle": {}
+            },
+            "1": {
+              "bulletStyle": {}
+            },
+            "2": {
+              "bulletStyle": {}
+            },
+            "3": {
+              "bulletStyle": {}
+            },
+            "4": {
+              "bulletStyle": {}
+            },
+            "5": {
+              "bulletStyle": {}
+            },
+            "6": {
+              "bulletStyle": {}
+            },
+            "7": {
+              "bulletStyle": {}
+            },
+            "8": {
+              "bulletStyle": {}
+            }
+          }
+        }
+      },
+      "textElements": [
+        {
+          "endIndex": 15,
+          "paragraphMarker": {
+            "style": {
+              "direction": "LEFT_TO_RIGHT",
+              "indentFirstLine": {
+                "unit": "PT"
+              },
+              "indentStart": {
+                "unit": "PT"
+              }
+            }
+          }
+        },
+        {
+          "endIndex": 15,
+          "textRun": {
+            "content": "Call to Action\n",
+            "style": {
+              "bold": true,
+              "fontSize": {
+                "magnitude": 15,
+                "unit": "PT"
+              }
+            }
+          }
+        },
+        {
+          "endIndex": 49,
+          "paragraphMarker": {
+            "bullet": {
+              "bulletStyle": {},
+              "glyph": "๏",
+              "listId": "kix.imml3jaa7dey"
+            },
+            "style": {
+              "direction": "LEFT_TO_RIGHT",
+              "indentFirstLine": {
+                "magnitude": 18,
+                "unit": "PT"
+              },
+              "indentStart": {
+                "magnitude": 36,
+                "unit": "PT"
+              },
+              "spacingMode": "COLLAPSE_LISTS"
+            }
+          },
+          "startIndex": 15
+        },
+        {
+          "endIndex": 49,
+          "startIndex": 15,
+          "textRun": {
+            "content": "Engage with the presented models:\n",
+            "style": {}
+          }
+        },
+        {
+          "endIndex": 124,
+          "paragraphMarker": {
+            "bullet": {
+              "bulletStyle": {},
+              "glyph": "\u003e",
+              "listId": "kix.imml3jaa7dey",
+              "nestingLevel": 1
+            },
+            "style": {
+              "direction": "LEFT_TO_RIGHT",
+              "indentFirstLine": {
+                "magnitude": 54,
+                "unit": "PT"
+              },
+              "indentStart": {
+                "magnitude": 72,
+                "unit": "PT"
+              },
+              "spacingMode": "COLLAPSE_LISTS"
+            }
+          },
+          "startIndex": 49
+        },
+        {
+          "endIndex": 61,
+          "startIndex": 49,
+          "textRun": {
+            "content": "Discuss and ",
+            "style": {}
+          }
+        },
+        {
+          "endIndex": 68,
+          "startIndex": 61,
+          "textRun": {
+            "content": "analyze",
+            "style": {
+              "bold": true
+            }
+          }
+        },
+        {
+          "endIndex": 124,
+          "startIndex": 68,
+          "textRun": {
+            "content": " their relevance and applicability within your context.\n",
+            "style": {}
+          }
+        },
+        {
+          "endIndex": 222,
+          "paragraphMarker": {
+            "bullet": {
+              "bulletStyle": {},
+              "glyph": "\u003e",
+              "listId": "kix.imml3jaa7dey",
+              "nestingLevel": 1
+            },
+            "style": {
+              "direction": "LEFT_TO_RIGHT",
+              "indentFirstLine": {
+                "magnitude": 54,
+                "unit": "PT"
+              },
+              "indentStart": {
+                "magnitude": 72,
+                "unit": "PT"
+              },
+              "spacingMode": "COLLAPSE_LISTS"
+            }
+          },
+          "startIndex": 124
+        },
+        {
+          "endIndex": 158,
+          "startIndex": 124,
+          "textRun": {
+            "content": "Adapt strategies and tailor these ",
+            "style": {}
+          }
+        },
+        {
+          "endIndex": 164,
+          "startIndex": 158,
+          "textRun": {
+            "content": "models",
+            "style": {
+              "bold": true
+            }
+          }
+        },
+        {
+          "endIndex": 222,
+          "startIndex": 164,
+          "textRun": {
+            "content": " to match your organizational culture and specific needs.\n",
+            "style": {}
+          }
+        },
+        {
+          "endIndex": 331,
+          "paragraphMarker": {
+            "bullet": {
+              "bulletStyle": {},
+              "glyph": "๏",
+              "listId": "kix.imml3jaa7dey"
+            },
+            "style": {
+              "direction": "LEFT_TO_RIGHT",
+              "indentFirstLine": {
+                "magnitude": 18,
+                "unit": "PT"
+              },
+              "indentStart": {
+                "magnitude": 36,
+                "unit": "PT"
+              },
+              "spacingMode": "COLLAPSE_LISTS"
+            }
+          },
+          "startIndex": 222
+        },
+        {
+          "endIndex": 271,
+          "startIndex": 222,
+          "textRun": {
+            "content": "Harmonize business and data initiatives to unify ",
+            "style": {}
+          }
+        },
+        {
+          "endIndex": 297,
+          "startIndex": 271,
+          "textRun": {
+            "content": "strategies efficiently and",
+            "style": {
+              "bold": true
+            }
+          }
+        },
+        {
+          "endIndex": 331,
+          "startIndex": 297,
+          "textRun": {
+            "content": " foster innovative breakthroughs.\n",
+            "style": {}
+          }
+        },
+        {
+          "endIndex": 448,
+          "paragraphMarker": {
+            "bullet": {
+              "bulletStyle": {},
+              "glyph": "๏",
+              "listId": "kix.imml3jaa7dey"
+            },
+            "style": {
+              "direction": "LEFT_TO_RIGHT",
+              "indentFirstLine": {
+                "magnitude": 18,
+                "unit": "PT"
+              },
+              "indentStart": {
+                "magnitude": 36,
+                "unit": "PT"
+              },
+              "spacingMode": "COLLAPSE_LISTS"
+            }
+          },
+          "startIndex": 331
+        },
+        {
+          "endIndex": 448,
+          "startIndex": 331,
+          "textRun": {
+            "content": "Embrace continuous improvements through incremental actions that lead to mastering data-driven excellence over time.\n",
+            "style": {}
+          }
+        },
+        {
+          "endIndex": 449,
+          "paragraphMarker": {
+            "style": {
+              "direction": "LEFT_TO_RIGHT",
+              "indentFirstLine": {
+                "unit": "PT"
+              },
+              "indentStart": {
+                "unit": "PT"
+              }
+            }
+          },
+          "startIndex": 448
+        },
+        {
+          "endIndex": 449,
+          "startIndex": 448,
+          "textRun": {
+            "content": "\n",
+            "style": {}
+          }
+        }
+      ]
+    }
+  },
+  "size": {
+    "height": {
+      "magnitude": 3000000,
+      "unit": "EMU"
+    },
+    "width": {
+      "magnitude": 3000000,
+      "unit": "EMU"
+    }
+  },
+  "transform": {
+    "scaleX": 2.6526,
+    "scaleY": 1.1987,
+    "translateX": 562825,
+    "translateY": 1273150,
+    "unit": "EMU"
+  }
+}
+{
+  "objectId": "SLIDES_API1557516005_2",
+  "shape": {
+    "placeholder": {
+      "parentObjectId": "g2ac55f3490c_0_1008",
+      "type": "SUBTITLE"
+    },
+    "shapeProperties": {
+      "autofit": {
+        "autofitType": "NONE",
+        "fontScale": 1
+      },
+      "outline": {
+        "propertyState": "INHERIT"
+      },
+      "shadow": {
+        "propertyState": "INHERIT"
+      },
+      "shapeBackgroundFill": {
+        "propertyState": "INHERIT"
+      }
+    },
+    "shapeType": "TEXT_BOX",
+    "text": {
+      "textElements": [
+        {
+          "endIndex": 40,
+          "paragraphMarker": {
+            "style": {
+              "direction": "LEFT_TO_RIGHT"
+            }
+          }
+        },
+        {
+          "endIndex": 40,
+          "textRun": {
+            "content": "Evolving Towards Data-Driven Excellence\n",
+            "style": {}
+          }
+        }
+      ]
+    }
+  },
+  "size": {
+    "height": {
+      "magnitude": 3000000,
+      "unit": "EMU"
+    },
+    "width": {
+      "magnitude": 3000000,
+      "unit": "EMU"
+    }
+  },
+  "transform": {
+    "scaleX": 2.6526,
+    "scaleY": 0.1236,
+    "translateX": 567950,
+    "translateY": 773825,
+    "unit": "EMU"
+  }
+}
+{
+  "objectId": "SLIDES_API1557516005_3",
+  "shape": {
+    "placeholder": {
+      "parentObjectId": "g2ac55f3490c_0_1009",
+      "type": "TITLE"
+    },
+    "shapeProperties": {
+      "autofit": {
+        "autofitType": "NONE",
+        "fontScale": 1
+      },
+      "outline": {
+        "propertyState": "INHERIT"
+      },
+      "shadow": {
+        "propertyState": "INHERIT"
+      },
+      "shapeBackgroundFill": {
+        "propertyState": "INHERIT"
+      }
+    },
+    "shapeType": "TEXT_BOX",
+    "text": {
+      "textElements": [
+        {
+          "endIndex": 28,
+          "paragraphMarker": {
+            "style": {
+              "direction": "LEFT_TO_RIGHT"
+            }
+          }
+        },
+        {
+          "endIndex": 28,
+          "textRun": {
+            "content": "Conclusion \u0026 Call to Action\n",
+            "style": {}
+          }
+        }
+      ]
+    }
+  },
+  "size": {
+    "height": {
+      "magnitude": 3000000,
+      "unit": "EMU"
+    },
+    "width": {
+      "magnitude": 3000000,
+      "unit": "EMU"
+    }
+  },
+  "transform": {
+    "scaleX": 2.6526,
+    "scaleY": 0.1236,
+    "translateX": 562825,
+    "translateY": 361400,
+    "unit": "EMU"
+  }
+}
