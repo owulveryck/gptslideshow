@@ -4,9 +4,11 @@ import (
 	"context"
 	"log"
 
+	drive "google.golang.org/api/drive/v3"
+
 	"github.com/owulveryck/gptslideshow/config"
 	"github.com/owulveryck/gptslideshow/internal/ai"
-	drive "google.golang.org/api/drive/v3"
+	"github.com/owulveryck/gptslideshow/internal/driveutils"
 )
 
 func main() {
@@ -44,6 +46,14 @@ func main() {
 
 	// Create presentation slides
 	err := createPresentationSlides(ctx, slidesSrv, driveSrv, openaiClient, config.ConfigInstance.WithImage, *presentationId, presentationData)
+	if err != nil {
+		log.Fatal(err)
+	}
+	b, err := driveutils.ExtractPDF(ctx, driveSrv, *presentationId)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = saveContent("output-*.pdf", b)
 	if err != nil {
 		log.Fatal(err)
 	}

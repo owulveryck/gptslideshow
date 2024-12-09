@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
 
 	drive "google.golang.org/api/drive/v3"
 	slides "google.golang.org/api/slides/v1"
@@ -17,12 +16,16 @@ import (
 )
 
 func generateSlides(ctx context.Context, openaiClient *ai.AI, prompt string, content []byte) *structure.Presentation {
+	saveContent("prompt-*.txt", []byte(prompt))
 	presentationData, err := openaiClient.GenerateContentFromText(ctx, prompt, content)
 	if err != nil {
 		log.Fatal(err)
 	}
-	enc := json.NewEncoder(os.Stdout)
-	enc.Encode(presentationData)
+	b, err := json.MarshalIndent(presentationData, "", " ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	saveContent("generated-data-*.json", b)
 
 	return presentationData
 }

@@ -18,7 +18,9 @@ You can also generate chapters between a set of content slides.
 If the slide is a chapter, the body should contain a complete description of the content of the chapter usable to generate a picture to illustrate.
 
 If it is a chapter, the field 'chapter' must be set to true.
-	The first slide should be an executive summary.
+		The first slide should be an executive summary. Generate the most complete possible output. Here is the content:
+
+
 `, "the prompt")
 
 	textfile = flag.String("content", "", "The content file")
