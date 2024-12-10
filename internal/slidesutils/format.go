@@ -1,7 +1,6 @@
 package slidesutils
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 	"unicode"
@@ -41,7 +40,6 @@ func Format(content string, objectID string) []*slides.Request {
 		if strings.HasSuffix(c.content, "\n\n") {
 			endIndex--
 		}
-		fmt.Printf("startIndex: %v, endIndex: %v, len: %v, content: %v\n", startIndex, endIndex, len(c.content), c.content)
 
 		// Apply bold styling if needed
 		if c.isBold {
