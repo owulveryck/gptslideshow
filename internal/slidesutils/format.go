@@ -1,21 +1,14 @@
 package slidesutils
 
 import (
-	"regexp"
-	"strings"
-	"unicode"
+	"log"
 	"unicode/utf8"
 
 	"google.golang.org/api/slides/v1"
 )
 
-type chunk struct {
-	content          string
-	isBold           bool
-	indentationLevel int // 0 means no indentation, 1 first bullet, 2 second bulled
-}
-
 func Format(content string, objectID string) []*slides.Request {
+	currentParagraph := 0
 	chunks := parseContent(content)
 
 	// Build the text content with styles
@@ -23,26 +16,29 @@ func Format(content string, objectID string) []*slides.Request {
 	currentIndex := int64(0) // Tracks the cumulative character index in the text box
 
 	for _, c := range chunks {
+		cr := ""
+		if c.paragraph != currentParagraph {
+			cr = "\n"
+			currentIndex = int64(c.paragraph)
+		}
+		log.Printf("content: '%v'", c.content)
 
 		// Append the text to the text box
 		requests = append(requests, &slides.Request{
 			InsertText: &slides.InsertTextRequest{
 				ObjectId:       objectID,
 				InsertionIndex: currentIndex,
-				Text:           c.content, // Add a newline after each chunk
+				Text:           c.content + cr, // Add a newline after each chunk
 			},
 		})
 
 		// Calculate the start and end indices for the current chunk
 		startIndex := currentIndex
-		endIndex := startIndex + int64(utf8.RuneCountInString(c.content))
-		// Replace only if the string ends with "\n\n"
-		//		if strings.HasSuffix(c.content, "\n\n") {
-		//			endIndex--
-		//		}
+		endIndex := startIndex + int64(utf8.RuneCountInString(c.content+cr))
+		bold, italic, normal := decodeStyle(c.style)
 
-		// Apply bold styling if needed
-		if c.isBold {
+		switch {
+		case bold:
 			requests = append(requests, &slides.Request{
 				UpdateTextStyle: &slides.UpdateTextStyleRequest{
 					ObjectId: objectID,
@@ -57,7 +53,7 @@ func Format(content string, objectID string) []*slides.Request {
 					Fields: "bold",
 				},
 			})
-		} else {
+		case normal:
 			requests = append(requests, &slides.Request{
 				UpdateTextStyle: &slides.UpdateTextStyleRequest{
 					ObjectId: objectID,
@@ -67,9 +63,25 @@ func Format(content string, objectID string) []*slides.Request {
 						EndIndex:   &endIndex,
 					},
 					Style: &slides.TextStyle{
-						Bold: false,
+						Italic: false,
+						Bold:   false,
 					},
-					Fields: "bold",
+					Fields: "*",
+				},
+			})
+		case italic:
+			requests = append(requests, &slides.Request{
+				UpdateTextStyle: &slides.UpdateTextStyleRequest{
+					ObjectId: objectID,
+					TextRange: &slides.Range{
+						Type:       "FIXED_RANGE",
+						StartIndex: &startIndex,
+						EndIndex:   &endIndex,
+					},
+					Style: &slides.TextStyle{
+						Italic: true,
+					},
+					Fields: "*",
 				},
 			})
 		}
@@ -130,70 +142,4 @@ func Format(content string, objectID string) []*slides.Request {
 	}
 
 	return requests
-}
-
-func parseContent(input string) []chunk {
-	var chunks []chunk
-
-	lines := strings.Split(input, "\n")              // Split the input into lines
-	boldRegex := regexp.MustCompile(`\*\*(.*?)\*\*`) // Regex to detect bold text
-
-	for _, line := range lines {
-		trimmedLine := filterPrintable(line)
-
-		// Determine the indentation level
-		var indentationLevel int
-		if strings.HasPrefix(trimmedLine, "- ") {
-			indentationLevel = 1
-			trimmedLine = strings.TrimPrefix(trimmedLine, "- ")
-		} else if strings.HasPrefix(trimmedLine, "  - ") {
-			indentationLevel = 2
-			trimmedLine = strings.TrimPrefix(trimmedLine, "  - ")
-		}
-
-		// Split the line into chunks by bold markers
-		parts := boldRegex.Split(trimmedLine, -1)
-		matches := boldRegex.FindAllStringSubmatch(trimmedLine, -1)
-
-		// Iterate over the parts and matches to build the chunks
-		for i, part := range parts {
-			if part != "" {
-				chunks = append(chunks, chunk{
-					content:          part,
-					isBold:           false,
-					indentationLevel: indentationLevel,
-				})
-			}
-
-			// Add the bold content if there's a match
-			if i < len(matches) {
-				chunks = append(chunks, chunk{
-					content:          matches[i][1], // The content inside the bold markers
-					isBold:           true,
-					indentationLevel: indentationLevel,
-				})
-			}
-		}
-		lastChunk := chunks[len(chunks)-1]
-		lastChunk.content = lastChunk.content + "\n"
-		chunks[len(chunks)-1] = lastChunk
-	}
-	// Remove the last carriage rerturn
-	lastChunk := chunks[len(chunks)-1]
-	lastChunk.content = lastChunk.content[:len(lastChunk.content)-1]
-	chunks[len(chunks)-1] = lastChunk
-
-	return chunks
-}
-
-func filterPrintable(s string) string {
-	result := []rune{}
-	for _, r := range s {
-		if unicode.IsSpace(r) {
-			result = append(result, ' ')
-		} else {
-			result = append(result, r)
-		}
-	}
-	return string(result)
 }
