@@ -16,10 +16,11 @@ import (
 
 func generateSlides(ctx context.Context, openaiClient *ai.AI, prompt string, content []byte) *structure.Presentation {
 	saveContent("prompt-*.txt", []byte(prompt))
-	presentationData, err := openaiClient.GenerateContentFromText(ctx, prompt, content)
+	presentationData, err := openaiClient.GeneratePresentationFromText(ctx, prompt, content)
 	if err != nil {
 		log.Fatal(err)
 	}
+	presentationData.OriginalContent = content
 	b, err := json.MarshalIndent(presentationData, "", " ")
 	if err != nil {
 		log.Fatal(err)
@@ -74,6 +75,14 @@ func createPresentationSlides(ctx context.Context, builder slidesutils.BuilderIn
 				}
 			}
 		} else {
+			/*
+				currentSlide, err := openaiClient.GenerateSlide(ctx, "Create a slide content based on the current title, subtitle, abstract based on the content provided", []byte("Title: "+slide.Title+"\nSubtitle: "+slide.Subtitle+"\nAbstract: "+slide.Body+"\nContent: "+string(presentationData.OriginalContent)))
+				if err != nil {
+					log.Fatal(err)
+				}
+				log.Println(currentSlide.Body)
+			*/
+
 			err = builder.CreateSlideTitleSubtitleBody(ctx, slide)
 			if err != nil {
 				return err

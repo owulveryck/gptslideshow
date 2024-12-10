@@ -23,7 +23,7 @@ func main() {
 	ctx := context.Background()
 
 	// Load client secret file
-	b, err := os.ReadFile("../../../credentials.json")
+	b, err := os.ReadFile("../../../../credentials.json")
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
 	}
@@ -53,8 +53,11 @@ func main() {
 	slide := structure.Slide{
 		Title:    "Title of the slide",
 		Subtitle: "Subtitle of the slide",
-		Body:     "The content of an awesome slide",
-		Chapter:  false,
+		Body: `this is a **bold** word and this is a list: Hello, 世界\xF0\x28\x8C\x28InvalidUTF8!
+- the level of indentation should be 1
+  - this content should have a level indentation of 2
+and this is back to a level of indentation of zero` + "Inspired by Simon Wardley's theory of evolution, this slide categorizes data progression in organizations into four phases:\n\n1. **Genesis** – Where data is initially unstructured, akin to the experimental world of startups.\n2. **Craft** – Early stages of structuring data and building robust applications.\n3. **Product** – Data is now an asset, structured for efficient usability across departments.\n4. **Commodity** – Data becomes a ubiquitous part of the organizational ecosystem, similar to basic utilities in society.\n\nUsing a two-dimensional model, we map the omnipresence and certainty of data over time, illustrating a diffusion curve similar to that seen in technology adoption cycles.",
+		Chapter: false,
 	}
 
 	err = builder.CreateCover(ctx, "AA", "BB")

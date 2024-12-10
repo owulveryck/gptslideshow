@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/owulveryck/gptslideshow/internal/slidesutils"
 	"github.com/owulveryck/gptslideshow/internal/structure"
 	slides "google.golang.org/api/slides/v1"
 )
@@ -48,6 +49,7 @@ func (b *Builder) CreateSlideTitleSubtitleBody(ctx context.Context, slide struct
 		return fmt.Errorf("failed to find placeholders on the new slide")
 	}
 
+	formattedBody := slidesutils.Format(slide.Body, bodyPlaceholderID)
 	// Prepare text requests to insert the title, subtitle, and body content.
 	textRequests := []*slides.Request{
 		{
@@ -64,14 +66,18 @@ func (b *Builder) CreateSlideTitleSubtitleBody(ctx context.Context, slide struct
 				Text:           slide.Subtitle,
 			},
 		},
-		{
-			InsertText: &slides.InsertTextRequest{
-				ObjectId:       bodyPlaceholderID,
-				InsertionIndex: 0,
-				Text:           slide.Body,
+		/*
+			{
+				InsertText: &slides.InsertTextRequest{
+					ObjectId:       bodyPlaceholderID,
+					InsertionIndex: 0,
+					Text:           slide.Body,
+				},
 			},
-		},
+		*/
 	}
+
+	textRequests = append(textRequests, formattedBody...)
 
 	// Execute the batch update request to insert text into the placeholders.
 	if _, err := b.Srv.Presentations.BatchUpdate(b.Presentation.PresentationId, &slides.BatchUpdatePresentationRequest{
