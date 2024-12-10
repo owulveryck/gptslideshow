@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 
 	"google.golang.org/api/slides/v1"
 )
@@ -22,11 +23,7 @@ func Format(content string, objectID string) []*slides.Request {
 	var requests []*slides.Request
 	currentIndex := int64(0) // Tracks the cumulative character index in the text box
 
-	cumulativeLength := 0
 	for _, c := range chunks {
-		//		if currentIndex > int64(len(c.content)) {
-		//		currentIndex = int64(len(c.content))
-		//	}
 
 		// Append the text to the text box
 		requests = append(requests, &slides.Request{
@@ -39,13 +36,12 @@ func Format(content string, objectID string) []*slides.Request {
 
 		// Calculate the start and end indices for the current chunk
 		startIndex := currentIndex
-		endIndex := startIndex + int64(len(c.content))
+		endIndex := startIndex + int64(utf8.RuneCountInString(c.content))
 		// Replace only if the string ends with "\n\n"
 		if strings.HasSuffix(c.content, "\n\n") {
 			endIndex--
 		}
-		cumulativeLength += len(strings.ReplaceAll(c.content, "\n\n", "\n"))
-		fmt.Printf("startIndex: %v, endIndex: %v, cumulative: %v, len: %v, content: %v\n", startIndex, endIndex, cumulativeLength, len(c.content), c.content)
+		fmt.Printf("startIndex: %v, endIndex: %v, len: %v, content: %v\n", startIndex, endIndex, len(c.content), c.content)
 
 		// Apply bold styling if needed
 		if c.isBold {
