@@ -37,9 +37,9 @@ func Format(content string, objectID string) []*slides.Request {
 		startIndex := currentIndex
 		endIndex := startIndex + int64(utf8.RuneCountInString(c.content))
 		// Replace only if the string ends with "\n\n"
-		if strings.HasSuffix(c.content, "\n\n") {
-			endIndex--
-		}
+		//		if strings.HasSuffix(c.content, "\n\n") {
+		//			endIndex--
+		//		}
 
 		// Apply bold styling if needed
 		if c.isBold {
@@ -178,6 +178,10 @@ func parseContent(input string) []chunk {
 		lastChunk.content = lastChunk.content + "\n"
 		chunks[len(chunks)-1] = lastChunk
 	}
+	// Remove the last carriage rerturn
+	lastChunk := chunks[len(chunks)-1]
+	lastChunk.content = lastChunk.content[:len(lastChunk.content)-1]
+	chunks[len(chunks)-1] = lastChunk
 
 	return chunks
 }
