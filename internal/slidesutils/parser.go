@@ -8,54 +8,54 @@ import (
 	"github.com/yuin/goldmark/text"
 )
 
-// Define the chunk struct
-type chunk struct {
-	content          string
-	style            style
-	indentationLevel int // 0 means no indentation, 1 first bullet, 2 second bullet
-	paragraph        int
+// Define the Chunk struct
+type Chunk struct {
+	Content          string
+	Style            Style
+	IndentationLevel int // 0 means no indentation, 1 first bullet, 2 second bullet
+	Paragraph        int
 }
 
 // Define the custom type
-type style []byte
+type Style []byte
 
 // Define bit masks for each style
 const (
-	normalMask byte = 1 << 0 // 0000 0001
-	boldMask   byte = 1 << 1 // 0000 0010
-	italicMask byte = 1 << 2 // 0000 0100
+	NormalMask byte = 1 << 0 // 0000 0001
+	BoldMask   byte = 1 << 1 // 0000 0010
+	ItalicMask byte = 1 << 2 // 0000 0100
 )
 
 // Encode a style into a custom style type
-func encodeStyle(bold, italic bool) style {
+func EncodeStyle(bold, italic bool) Style {
 	var s byte
 	if bold {
-		s |= boldMask
+		s |= BoldMask
 	}
 	if italic {
-		s |= italicMask
+		s |= ItalicMask
 	}
 	if !italic && !bold {
-		s |= normalMask
+		s |= NormalMask
 	}
-	return style{s}
+	return Style{s}
 }
 
 // Decode a style back into its components
-func decodeStyle(s style) (bold, italic, normal bool) {
+func DecodeStyle(s Style) (bold, italic, normal bool) {
 	if len(s) == 0 {
 		return false, false, false
 	}
-	bold = s[0]&boldMask != 0
-	italic = s[0]&italicMask != 0
-	normal = s[0]&normalMask != 0
+	bold = s[0]&BoldMask != 0
+	italic = s[0]&ItalicMask != 0
+	normal = s[0]&NormalMask != 0
 	return
 }
 
 var paragraph int
 
 // Recursive function to traverse AST and collect chunks
-func processNode(n ast.Node, reader text.Reader, level int, currentStyle style, chunks *[]chunk) {
+func processNode(n ast.Node, reader text.Reader, level int, currentStyle Style, chunks *[]Chunk) {
 	switch n.Kind() {
 	case ast.KindEmphasis:
 	case ast.KindText:
@@ -72,24 +72,24 @@ func processNode(n ast.Node, reader text.Reader, level int, currentStyle style, 
 	if textNode, ok := n.(*ast.Text); ok {
 		// Extract text content
 		content := textNode.Segment.Value(reader.Source())
-		*chunks = append(*chunks, chunk{
-			content:          string(content),
-			style:            currentStyle,
-			indentationLevel: level,
-			paragraph:        paragraph,
+		*chunks = append(*chunks, Chunk{
+			Content:          string(content),
+			Style:            currentStyle,
+			IndentationLevel: level,
+			Paragraph:        paragraph,
 		})
 	}
 
 	if emphasisNode, ok := n.(*ast.Emphasis); ok {
 		// Update style for emphasis
 		newStyle := currentStyle
-		bold, italic, _ := decodeStyle(currentStyle)
+		bold, italic, _ := DecodeStyle(currentStyle)
 		if emphasisNode.Level == 1 {
 			italic = true
 		} else if emphasisNode.Level == 2 {
 			bold = true
 		}
-		newStyle = encodeStyle(bold, italic)
+		newStyle = EncodeStyle(bold, italic)
 
 		// Process children with updated style
 		for child := emphasisNode.FirstChild(); child != nil; child = child.NextSibling() {
@@ -114,13 +114,13 @@ func processNode(n ast.Node, reader text.Reader, level int, currentStyle style, 
 }
 
 // Main function to parse content
-func parseContent(input string) []chunk {
+func parseContent(input string) []Chunk {
 	md := goldmark.New()
 	reader := text.NewReader([]byte(input))
 	document := md.Parser().Parse(reader)
 
 	// Collect chunks
-	var chunks []chunk
-	processNode(document, reader, 0, encodeStyle(false, false), &chunks)
+	var chunks []Chunk
+	processNode(document, reader, 0, EncodeStyle(false, false), &chunks)
 	return chunks
 }

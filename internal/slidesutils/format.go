@@ -1,144 +1,145 @@
 package slidesutils
 
 import (
-	"log"
 	"unicode/utf8"
 
 	"google.golang.org/api/slides/v1"
 )
 
-func Format(content string, objectID string) []*slides.Request {
-	currentParagraph := 0
-	chunks := parseContent(content)
+// InsertText inserts text into a specified object with a given insertion index.
+func InsertText(objectID string, content string, insertionIndex int64) *slides.Request {
+	return &slides.Request{
+		InsertText: &slides.InsertTextRequest{
+			ObjectId:       objectID,
+			InsertionIndex: insertionIndex,
+			Text:           content,
+		},
+	}
+}
 
-	// Build the text content with styles
-	var requests []*slides.Request
-	currentIndex := int64(0) // Tracks the cumulative character index in the text box
-
-	for _, c := range chunks {
-		cr := ""
-		if c.paragraph != currentParagraph {
-			cr = "\n"
-			currentIndex = int64(c.paragraph)
-		}
-		log.Printf("content: '%v'", c.content)
-
-		// Append the text to the text box
-		requests = append(requests, &slides.Request{
-			InsertText: &slides.InsertTextRequest{
-				ObjectId:       objectID,
-				InsertionIndex: currentIndex,
-				Text:           c.content + cr, // Add a newline after each chunk
+// UpdateTextStyle updates the text style (e.g., bold, italic) for a specific range.
+func UpdateTextStyle(objectID string, startIndex, endIndex int64, bold, italic, normal bool) *slides.Request {
+	return &slides.Request{
+		UpdateTextStyle: &slides.UpdateTextStyleRequest{
+			ObjectId: objectID,
+			TextRange: &slides.Range{
+				Type:       "FIXED_RANGE",
+				StartIndex: &startIndex,
+				EndIndex:   &endIndex,
 			},
-		})
+			Style: &slides.TextStyle{
+				Bold:   bold,
+				Italic: italic,
+			},
+			Fields: "bold,italic",
+		},
+	}
+}
 
-		// Calculate the start and end indices for the current chunk
-		startIndex := currentIndex
-		endIndex := startIndex + int64(utf8.RuneCountInString(c.content+cr))
-		bold, italic, normal := decodeStyle(c.style)
+// CreateBullets creates bullet points for a specific range.
+func CreateBullets(objectID string, startIndex, endIndex int64) *slides.Request {
+	return &slides.Request{
+		CreateParagraphBullets: &slides.CreateParagraphBulletsRequest{
+			ObjectId: objectID,
+			TextRange: &slides.Range{
+				Type:       "FIXED_RANGE",
+				StartIndex: &startIndex,
+				EndIndex:   &endIndex,
+			},
+			BulletPreset: "BULLET_DISC_CIRCLE_SQUARE",
+		},
+	}
+}
 
-		switch {
-		case bold:
-			requests = append(requests, &slides.Request{
-				UpdateTextStyle: &slides.UpdateTextStyleRequest{
-					ObjectId: objectID,
-					TextRange: &slides.Range{
-						Type:       "FIXED_RANGE",
-						StartIndex: &startIndex,
-						EndIndex:   &endIndex,
-					},
-					Style: &slides.TextStyle{
-						Bold: true,
-					},
-					Fields: "bold",
+// UpdateParagraphStyle updates the paragraph style (e.g., indentation) for a specific range.
+func UpdateParagraphStyle(objectID string, startIndex, endIndex int64, indentFirstLine, indentStart float64) *slides.Request {
+	return &slides.Request{
+		UpdateParagraphStyle: &slides.UpdateParagraphStyleRequest{
+			ObjectId: objectID,
+			TextRange: &slides.Range{
+				Type:       "FIXED_RANGE",
+				StartIndex: &startIndex,
+				EndIndex:   &endIndex,
+			},
+			Style: &slides.ParagraphStyle{
+				IndentFirstLine: &slides.Dimension{
+					Magnitude: indentFirstLine,
+					Unit:      "PT",
 				},
-			})
-		case normal:
-			requests = append(requests, &slides.Request{
-				UpdateTextStyle: &slides.UpdateTextStyleRequest{
-					ObjectId: objectID,
-					TextRange: &slides.Range{
-						Type:       "FIXED_RANGE",
-						StartIndex: &startIndex,
-						EndIndex:   &endIndex,
-					},
-					Style: &slides.TextStyle{
-						Italic: false,
-						Bold:   false,
-					},
-					Fields: "*",
+				IndentStart: &slides.Dimension{
+					Magnitude: indentStart,
+					Unit:      "PT",
 				},
-			})
-		case italic:
-			requests = append(requests, &slides.Request{
-				UpdateTextStyle: &slides.UpdateTextStyleRequest{
-					ObjectId: objectID,
-					TextRange: &slides.Range{
-						Type:       "FIXED_RANGE",
-						StartIndex: &startIndex,
-						EndIndex:   &endIndex,
-					},
-					Style: &slides.TextStyle{
-						Italic: true,
-					},
-					Fields: "*",
-				},
-			})
+			},
+			Fields: "indentFirstLine,indentStart",
+		},
+	}
+}
+
+// Format processes the content and generates a list of requests for formatting.
+func Format(chunks []Chunk, objectID string) []*slides.Request {
+	// toRemove is the number of tabs to remove from the endIndex
+	toRemove := int64(0)
+	var requests []*slides.Request
+	currentIndex := int64(0) // Tracks the cumulative character index in the text box.
+
+	inList := false
+	var inListStartIndex, inListEndIndex int64
+	// First, insert all the text
+	for i, c := range chunks {
+		if i < len(chunks)-1 && chunks[i+1].Paragraph != c.Paragraph {
+			c.Content += "\n"
 		}
 
-		// Apply bullet points based on indentation level
-		if c.indentationLevel > 0 {
-			// Create bullet points
+		// Insert text into the text box.
+		if i > 0 {
+			if chunks[i-1].Paragraph != c.Paragraph {
+				if c.IndentationLevel == 1 {
+					c.Content = "" + c.Content
+				}
+				if c.IndentationLevel == 2 {
+					c.Content = "\t" + c.Content
+					toRemove++
+				}
+			}
+		}
+		startIndex := currentIndex
+		endIndex := startIndex + int64(utf8.RuneCountInString(c.Content))
+
+		requests = append(requests, InsertText(objectID, c.Content, currentIndex))
+
+		// Decode and apply text styles.
+		bold, italic, normal := DecodeStyle(c.Style)
+		if bold || italic || normal {
+			requests = append(requests, UpdateTextStyle(objectID, startIndex, endIndex, bold, italic, normal))
+		}
+		// We are entering a list
+		if c.IndentationLevel > 0 && !inList {
+			inListStartIndex = startIndex
+			inList = true
+		}
+		// Update the current index to account for the inserted text and newline.
+		currentIndex = endIndex
+		// End of the list Apply Request
+		if (c.IndentationLevel == 0 || i == len(chunks)-1) && inList {
 			requests = append(requests, &slides.Request{
 				CreateParagraphBullets: &slides.CreateParagraphBulletsRequest{
-					ObjectId: objectID,
-					TextRange: &slides.Range{
-						Type:       "FIXED_RANGE",
-						StartIndex: &startIndex,
-						EndIndex:   &endIndex, // Include the newline for bullet points
-					},
 					BulletPreset: "BULLET_DISC_CIRCLE_SQUARE",
-				},
-			})
-
-			// Adjust indentation level
-			var indentStart, indentFirstStart float64
-			switch c.indentationLevel {
-			case 1:
-				indentFirstStart = 18.0 // First level indentation, in points
-				indentStart = 36.0      // First level indentation, in points
-			case 2:
-				indentFirstStart = 54.0 // First level indentation, in points
-				indentStart = 72.0      // Second level indentation, in points
-			default:
-				indentStart = float64(c.indentationLevel) * 36.0 // Adjust as needed for deeper levels
-			}
-
-			requests = append(requests, &slides.Request{
-				UpdateParagraphStyle: &slides.UpdateParagraphStyleRequest{
-					ObjectId: objectID,
+					ObjectId:     objectID,
 					TextRange: &slides.Range{
+						StartIndex: &inListStartIndex,
+						EndIndex:   &inListEndIndex,
 						Type:       "FIXED_RANGE",
-						StartIndex: &startIndex,
-						EndIndex:   &endIndex,
 					},
-					Style: &slides.ParagraphStyle{
-						IndentFirstLine: &slides.Dimension{
-							Magnitude: indentFirstStart,
-							Unit:      "PT",
-						},
-						IndentStart: &slides.Dimension{
-							Magnitude: indentStart,
-							Unit:      "PT",
-						},
-					},
-					Fields: "indentStart, indentFirstLine", // Ensure only the indentStart field is updated
 				},
 			})
+			inList = false
+			currentIndex -= toRemove
 		}
 
-		// Update the current index to account for the inserted text and newline
-		currentIndex = endIndex
+		if inList {
+			inListEndIndex = endIndex - toRemove
+		}
 	}
 
 	return requests

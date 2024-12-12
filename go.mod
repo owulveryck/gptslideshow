@@ -6,6 +6,7 @@ require (
 	github.com/invopop/jsonschema v0.12.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/openai/openai-go v0.1.0-alpha.38
+	github.com/yuin/goldmark v1.7.8
 	golang.org/x/oauth2 v0.24.0
 	google.golang.org/api v0.209.0
 )

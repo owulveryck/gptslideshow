@@ -10,6 +10,8 @@ import (
 	"github.com/owulveryck/gptslideshow/internal/gcputils"
 	"github.com/owulveryck/gptslideshow/internal/slidesutils/mytemplate"
 	"github.com/owulveryck/gptslideshow/internal/structure"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/text"
 	"golang.org/x/oauth2/google"
 	drive "google.golang.org/api/drive/v3"
 	slides "google.golang.org/api/slides/v1"
@@ -65,10 +67,10 @@ and this is back to a level of indentation of zero` + "Inspired by Simon Wardley
 		log.Fatal(err)
 	}
 	// Create a slide with title, subtitle, and body
-	err = builder.CreateSlideTitleSubtitleBody(ctx, slide)
-	if err != nil {
-		log.Fatal(err)
-	}
+	//	err = builder.CreateSlideTitleSubtitleBody(ctx, slide)
+	//	if err != nil {
+	//		log.Fatal(err)
+	//	}
 	// Create a chapter slide
 	err = builder.CreateChapter(ctx, slide)
 	if err != nil {
@@ -101,4 +103,28 @@ and this is back to a level of indentation of zero` + "Inspired by Simon Wardley
 	log.Println("Image inserted successfully.")
 
 	fmt.Println("New presentation created and modified successfully.")
+
+	// Example Markdown content
+	markdown := `
+
+This is a paragraph with some **bold** text.
+
+- First item
+- Second item
+- Third item
+`
+
+	// Parse the Markdown into an AST
+	md := goldmark.New()
+	source := []byte(markdown)
+	reader := text.NewReader(source)
+	parser := md.Parser()
+	doc := parser.Parse(reader)
+	err = builder.CreateNewSlide(ctx, mytemplate.TitleSubtitleBody)
+
+	// Add the AST content to the current slide
+	err = builder.AddNodeContent(doc, source)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+	}
 }

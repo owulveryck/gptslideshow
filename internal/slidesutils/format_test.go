@@ -11,17 +11,17 @@ func TestParseContent(t *testing.T) {
   - this content should have a level indentation of 2
 and this is back to a level of indentation of zero`
 
-	expected := []chunk{
-		{content: "this is a ", style: style{normalMask}, indentationLevel: 0},
-		{content: "bold", style: style{boldMask}, indentationLevel: 0},
-		{content: " word and this is an ", style: style{normalMask}, indentationLevel: 0},
-		{content: "italic", style: style{italicMask}, indentationLevel: 0},
-		{content: " like ", style: style{normalMask}, indentationLevel: 0},
-		{content: "this", style: style{italicMask}, indentationLevel: 0},
-		{content: ". This is a list:", style: style{normalMask}, indentationLevel: 0},
-		{content: "the level of indentation should be 1\n", style: style{normalMask}, indentationLevel: 1},
-		{content: "this content should have a level indentation of 2\n", style: style{normalMask}, indentationLevel: 2},
-		{content: "and this is back to a level of indentation of zero", style: style{normalMask}, indentationLevel: 0},
+	expected := []Chunk{
+		{Content: "this is a ", Style: Style{NormalMask}, IndentationLevel: 0},
+		{Content: "bold", Style: Style{BoldMask}, IndentationLevel: 0},
+		{Content: " word and this is an ", Style: Style{NormalMask}, IndentationLevel: 0},
+		{Content: "italic", Style: Style{ItalicMask}, IndentationLevel: 0},
+		{Content: " like ", Style: Style{NormalMask}, IndentationLevel: 0},
+		{Content: "this", Style: Style{ItalicMask}, IndentationLevel: 0},
+		{Content: ". This is a list:", Style: Style{NormalMask}, IndentationLevel: 0},
+		{Content: "the level of indentation should be 1\n", Style: Style{NormalMask}, IndentationLevel: 1},
+		{Content: "this content should have a level indentation of 2\n", Style: Style{NormalMask}, IndentationLevel: 2},
+		{Content: "and this is back to a level of indentation of zero", Style: Style{NormalMask}, IndentationLevel: 0},
 	}
 
 	result := parseContent(input)
