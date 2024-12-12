@@ -114,7 +114,7 @@ func processNode(n ast.Node, reader text.Reader, level int, currentStyle Style, 
 }
 
 // Main function to parse content
-func parseContent(input string) []Chunk {
+func ParseContent(input string) []Chunk {
 	md := goldmark.New()
 	reader := text.NewReader([]byte(input))
 	document := md.Parser().Parse(reader)
