@@ -136,6 +136,7 @@ func InsertMarkdownContent(input string, objectID string) []*slides.Request {
 			})
 			inList = false
 			currentIndex -= toRemove
+			toRemove = 0
 		}
 
 		if inList {

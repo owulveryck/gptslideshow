@@ -60,15 +60,18 @@ func processNode(n ast.Node, reader text.Reader, level int, currentStyle Style, 
 	case ast.KindEmphasis:
 	case ast.KindText:
 	case ast.KindList:
+		paragraph++
 	case ast.KindListItem:
 		paragraph++
 	case ast.KindParagraph:
 		paragraph++
 	case ast.KindTextBlock:
+		paragraph++
 	case ast.KindDocument:
 	default:
 		log.Printf("Warning, node kind %v will may not be rendered correctly", n.Kind().String())
 	}
+
 	if textNode, ok := n.(*ast.Text); ok {
 		// Extract text content
 		content := textNode.Segment.Value(reader.Source())
