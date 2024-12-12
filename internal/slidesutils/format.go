@@ -76,8 +76,9 @@ func UpdateParagraphStyle(objectID string, startIndex, endIndex int64, indentFir
 	}
 }
 
-// Format processes the content and generates a list of requests for formatting.
-func Format(chunks []Chunk, objectID string) []*slides.Request {
+// InsertMarkdownContent processes the content and generates a list of requests for formatting.
+func InsertMarkdownContent(input string, objectID string) []*slides.Request {
+	chunks := parseContent(input)
 	// toRemove is the number of tabs to remove from the endIndex
 	toRemove := int64(0)
 	var requests []*slides.Request

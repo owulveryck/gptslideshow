@@ -49,7 +49,7 @@ func (b *Builder) CreateSlideTitleSubtitleBody(ctx context.Context, slide struct
 		return fmt.Errorf("failed to find placeholders on the new slide")
 	}
 
-	formattedBody := slidesutils.Format(slide.Body, bodyPlaceholderID)
+	formattedBody := slidesutils.InsertMarkdownContent(slide.Body, bodyPlaceholderID)
 	// Prepare text requests to insert the title, subtitle, and body content.
 	textRequests := []*slides.Request{
 		{
@@ -66,15 +66,6 @@ func (b *Builder) CreateSlideTitleSubtitleBody(ctx context.Context, slide struct
 				Text:           slide.Subtitle,
 			},
 		},
-		/*
-			{
-				InsertText: &slides.InsertTextRequest{
-					ObjectId:       bodyPlaceholderID,
-					InsertionIndex: 0,
-					Text:           slide.Body,
-				},
-			},
-		*/
 	}
 
 	textRequests = append(textRequests, formattedBody...)
