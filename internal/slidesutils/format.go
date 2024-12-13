@@ -79,8 +79,6 @@ func UpdateParagraphStyle(objectID string, startIndex, endIndex int64, indentFir
 // InsertMarkdownContent processes the content and generates a list of requests for formatting.
 func InsertMarkdownContent(input string, objectID string) []*slides.Request {
 	chunks := parseContent(input)
-	// toRemove is the number of tabs to remove from the endIndex
-	toRemove := int64(0)
 	var requests []*slides.Request
 	currentIndex := int64(0) // Tracks the cumulative character index in the text box.
 
@@ -96,11 +94,9 @@ func InsertMarkdownContent(input string, objectID string) []*slides.Request {
 		if i > 0 {
 			if chunks[i-1].Paragraph != c.Paragraph {
 				if c.IndentationLevel == 1 {
-					c.Content = "" + c.Content
 				}
 				if c.IndentationLevel == 2 {
 					c.Content = "\t" + c.Content
-					toRemove++
 				}
 			}
 		}
@@ -111,7 +107,7 @@ func InsertMarkdownContent(input string, objectID string) []*slides.Request {
 
 		// Decode and apply text styles.
 		bold, italic, normal := DecodeStyle(c.Style)
-		if bold || italic || normal {
+		if bold || italic {
 			requests = append(requests, UpdateTextStyle(objectID, startIndex, endIndex, bold, italic, normal))
 		}
 		// We are entering a list
@@ -123,24 +119,24 @@ func InsertMarkdownContent(input string, objectID string) []*slides.Request {
 		currentIndex = endIndex
 		// End of the list Apply Request
 		if (c.IndentationLevel == 0 || i == len(chunks)-1) && inList {
+			start := inListStartIndex
+			end := inListEndIndex - 1
 			requests = append(requests, &slides.Request{
 				CreateParagraphBullets: &slides.CreateParagraphBulletsRequest{
 					BulletPreset: "BULLET_DISC_CIRCLE_SQUARE",
 					ObjectId:     objectID,
 					TextRange: &slides.Range{
-						StartIndex: &inListStartIndex,
-						EndIndex:   &inListEndIndex,
+						StartIndex: &start,
+						EndIndex:   &end,
 						Type:       "FIXED_RANGE",
 					},
 				},
 			})
 			inList = false
-			currentIndex -= toRemove
-			toRemove = 0
 		}
 
 		if inList {
-			inListEndIndex = endIndex - toRemove
+			inListEndIndex = endIndex
 		}
 	}
 

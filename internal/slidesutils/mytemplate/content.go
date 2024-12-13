@@ -2,7 +2,11 @@ package mytemplate
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
+	"sort"
+	"time"
 
 	"github.com/owulveryck/gptslideshow/internal/slidesutils"
 	"github.com/owulveryck/gptslideshow/internal/structure"
@@ -69,13 +73,38 @@ func (b *Builder) CreateSlideTitleSubtitleBody(ctx context.Context, slide struct
 	}
 
 	textRequests = append(textRequests, formattedBody...)
+	enc := json.NewEncoder(os.Stdout)
+	enc.Encode(textRequests)
 
-	// Execute the batch update request to insert text into the placeholders.
-	if _, err := b.Srv.Presentations.BatchUpdate(b.Presentation.PresentationId, &slides.BatchUpdatePresentationRequest{
-		Requests: textRequests,
-	}).Context(ctx).Do(); err != nil {
-		return fmt.Errorf("failed to insert text: %w", err)
+	// Sort the requests slice
+	sort.SliceStable(textRequests, func(i, j int) bool {
+		// Define the priority for each type
+		priority := func(req *slides.Request) int {
+			switch {
+			case req.InsertText != nil:
+				return 1 // Highest priority
+			case req.UpdateTextStyle != nil:
+				return 2
+			case req.CreateParagraphBullets != nil:
+				return 3 // Lowest priority
+			default:
+				return 4 // Fallback for unknown types
+			}
+		}
+
+		// Compare the priorities of the two elements
+		return priority(textRequests[i]) < priority(textRequests[j])
+	})
+	enc.Encode(textRequests)
+
+	for _, textRequests := range textRequests {
+		// Execute the batch update request to insert text into the placeholders.
+		if _, err := b.Srv.Presentations.BatchUpdate(b.Presentation.PresentationId, &slides.BatchUpdatePresentationRequest{
+			Requests: []*slides.Request{textRequests},
+		}).Context(ctx).Do(); err != nil {
+			return fmt.Errorf("failed to insert text: %w", err)
+		}
+		time.Sleep(10 * time.Millisecond)
 	}
-
 	return nil
 }

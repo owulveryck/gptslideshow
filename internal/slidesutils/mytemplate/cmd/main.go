@@ -52,17 +52,24 @@ func main() {
 	slide := structure.Slide{
 		Title:    "Title of the slide",
 		Subtitle: "Subtitle of the slide",
-		Body: `this is a **bold** word and this is a list: Hello, 世界\xF0\x28\x8C\x28InvalidUTF8!
-- the level of indentation should be 1
-  - this content should have a level indentation of 2
-and this is back to a level of indentation of zero
-Inspired by Simon Wardley's theory of evolution, this slide categorizes data progression in organizations into four phases:
-1. **Genesis** – Where data is initially unstructured, akin to the experimental world of startups.
-2. **Craft** – Early stages of structuring data and building robust applications.
-3. **Product** – Data is now an asset, structured for efficient usability across departments.
-4. **Commodity** – Data becomes a ubiquitous part of the organizational ecosystem, similar to basic utilities in society.
+		Body: `this is a **bold** word and this is _italic_... This is **_bold and Italic_**
 
-Using a two-dimensional model, we map the omnipresence and certainty of data over time, illustrating a diffusion curve similar to that seen in technology adoption cycles.
+		This is a list: 
+- Hello, 世界!
+- the level of indentation **should** be 1
+  - this **content** should have a level indentation of 2
+
+**and** this is back to a level of indentation of zero
+
+This is another paragraph with another list:
+
+1. **First Element** – cool...
+2. **Second Element** – nice
+3. **Third** – still cool
+
+A last word...
+
+I like this!
 `,
 		Chapter: false,
 	}

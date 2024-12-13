@@ -1,0 +1,736 @@
+[
+  {
+    "insertText": {
+      "objectId": "SLIDES_API1145746793_3",
+      "text": "Title of the slide"
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "SLIDES_API1145746793_2",
+      "text": "Subtitle of the slide"
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "this is a "
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 10,
+        "startIndex": 0,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 10,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "bold"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {
+        "bold": true
+      },
+      "textRange": {
+        "endIndex": 14,
+        "startIndex": 10,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 14,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": " word and this is a list: Hello, 世界\\xF0\\x28\\x8C\\x28InvalidUTF8"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 76,
+        "startIndex": 14,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 76,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "!\n"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 78,
+        "startIndex": 76,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 78,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "the level of indentation should be 1\n"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 115,
+        "startIndex": 78,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 115,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "\tthis content should have a level indentation of 2\n"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 166,
+        "startIndex": 115,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 166,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "and this is back to a level of indentation of zero\n"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 217,
+        "startIndex": 166,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "createParagraphBullets": {
+      "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE",
+      "objectId": "SLIDES_API1145746793_1",
+      "textRange": {
+        "endIndex": 710,
+        "startIndex": 341,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 217,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "Inspired by Simon Wardley's theory of evolution, this slide categorizes data progression in organizations into four phases:\n"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 341,
+        "startIndex": 217,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 341,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "Genesis"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {
+        "bold": true
+      },
+      "textRange": {
+        "endIndex": 348,
+        "startIndex": 341,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 348,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": " – Where data is initially unstructured, akin to the experimental world of startups.\n"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 433,
+        "startIndex": 348,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 433,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "Craft"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {
+        "bold": true
+      },
+      "textRange": {
+        "endIndex": 438,
+        "startIndex": 433,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 438,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": " – Early stages of structuring data and building robust applications.\n"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 508,
+        "startIndex": 438,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 508,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "Product"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {
+        "bold": true
+      },
+      "textRange": {
+        "endIndex": 515,
+        "startIndex": 508,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 515,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": " – Data is now an asset, structured for efficient usability across departments.\n"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 595,
+        "startIndex": 515,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 595,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "Commodity"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {
+        "bold": true
+      },
+      "textRange": {
+        "endIndex": 604,
+        "startIndex": 595,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 604,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": " – Data becomes a ubiquitous part of the organizational ecosystem, similar to basic utilities in society.\n"
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 710,
+        "startIndex": 604,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 710,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "Using a two-dimensional model, we map the omnipresence and certainty of data over time, illustrating a diffusion curve similar to that seen in technology adoption cycles."
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 880,
+        "startIndex": 710,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "createParagraphBullets": {
+      "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE",
+      "objectId": "SLIDES_API1145746793_1",
+      "textRange": {
+        "endIndex": 710,
+        "startIndex": 341,
+        "type": "FIXED_RANGE"
+      }
+    }
+  }
+]
+[
+  {
+    "insertText": {
+      "objectId": "SLIDES_API1145746793_3",
+      "text": "Title of the slide"
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "SLIDES_API1145746793_2",
+      "text": "Subtitle of the slide"
+    }
+  },
+  {
+    "insertText": {
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "this is a "
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 10,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "bold"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 14,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": " word and this is a list: Hello, 世界\\xF0\\x28\\x8C\\x28InvalidUTF8"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 76,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "!\n"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 78,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "the level of indentation should be 1\n"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 115,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "\tthis content should have a level indentation of 2\n"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 166,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "and this is back to a level of indentation of zero\n"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 217,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "Inspired by Simon Wardley's theory of evolution, this slide categorizes data progression in organizations into four phases:\n"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 341,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "Genesis"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 348,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": " – Where data is initially unstructured, akin to the experimental world of startups.\n"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 433,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "Craft"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 438,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": " – Early stages of structuring data and building robust applications.\n"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 508,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "Product"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 515,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": " – Data is now an asset, structured for efficient usability across departments.\n"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 595,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "Commodity"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 604,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": " – Data becomes a ubiquitous part of the organizational ecosystem, similar to basic utilities in society.\n"
+    }
+  },
+  {
+    "insertText": {
+      "insertionIndex": 710,
+      "objectId": "SLIDES_API1145746793_1",
+      "text": "Using a two-dimensional model, we map the omnipresence and certainty of data over time, illustrating a diffusion curve similar to that seen in technology adoption cycles."
+    }
+  },
+  {
+    "createParagraphBullets": {
+      "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE",
+      "objectId": "SLIDES_API1145746793_1",
+      "textRange": {
+        "endIndex": 710,
+        "startIndex": 341,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "createParagraphBullets": {
+      "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE",
+      "objectId": "SLIDES_API1145746793_1",
+      "textRange": {
+        "endIndex": 710,
+        "startIndex": 341,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 10,
+        "startIndex": 0,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {
+        "bold": true
+      },
+      "textRange": {
+        "endIndex": 14,
+        "startIndex": 10,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 76,
+        "startIndex": 14,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 78,
+        "startIndex": 76,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 115,
+        "startIndex": 78,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 166,
+        "startIndex": 115,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 217,
+        "startIndex": 166,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 341,
+        "startIndex": 217,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {
+        "bold": true
+      },
+      "textRange": {
+        "endIndex": 348,
+        "startIndex": 341,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 433,
+        "startIndex": 348,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {
+        "bold": true
+      },
+      "textRange": {
+        "endIndex": 438,
+        "startIndex": 433,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 508,
+        "startIndex": 438,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {
+        "bold": true
+      },
+      "textRange": {
+        "endIndex": 515,
+        "startIndex": 508,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 595,
+        "startIndex": 515,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {
+        "bold": true
+      },
+      "textRange": {
+        "endIndex": 604,
+        "startIndex": 595,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 710,
+        "startIndex": 604,
+        "type": "FIXED_RANGE"
+      }
+    }
+  },
+  {
+    "updateTextStyle": {
+      "fields": "bold,italic",
+      "objectId": "SLIDES_API1145746793_1",
+      "style": {},
+      "textRange": {
+        "endIndex": 880,
+        "startIndex": 710,
+        "type": "FIXED_RANGE"
+      }
+    }
+  }
+]
