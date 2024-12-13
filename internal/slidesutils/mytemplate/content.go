@@ -2,9 +2,7 @@ package mytemplate
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"os"
 	"sort"
 	"time"
 
@@ -73,8 +71,6 @@ func (b *Builder) CreateSlideTitleSubtitleBody(ctx context.Context, slide struct
 	}
 
 	textRequests = append(textRequests, formattedBody...)
-	enc := json.NewEncoder(os.Stdout)
-	enc.Encode(textRequests)
 
 	// Sort the requests slice
 	sort.SliceStable(textRequests, func(i, j int) bool {
@@ -95,7 +91,6 @@ func (b *Builder) CreateSlideTitleSubtitleBody(ctx context.Context, slide struct
 		// Compare the priorities of the two elements
 		return priority(textRequests[i]) < priority(textRequests[j])
 	})
-	enc.Encode(textRequests)
 
 	for _, textRequests := range textRequests {
 		// Execute the batch update request to insert text into the placeholders.
