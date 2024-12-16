@@ -1,6 +1,7 @@
 package slidesutils
 
 import (
+	"sort"
 	"unicode/utf8"
 
 	"google.golang.org/api/slides/v1"
@@ -141,4 +142,25 @@ func InsertMarkdownContent(input string, objectID string) []*slides.Request {
 	}
 
 	return requests
+}
+
+func SortRequests(requests []*slides.Request) {
+	sort.SliceStable(requests, func(i, j int) bool {
+		// Define the priority for each type
+		priority := func(req *slides.Request) int {
+			switch {
+			case req.InsertText != nil:
+				return 1 // Highest priority
+			case req.UpdateTextStyle != nil:
+				return 2
+			case req.CreateParagraphBullets != nil:
+				return 3 // Lowest priority
+			default:
+				return 4 // Fallback for unknown types
+			}
+		}
+
+		// Compare the priorities of the two elements
+		return priority(requests[i]) < priority(requests[j])
+	})
 }

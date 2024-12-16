@@ -142,6 +142,7 @@ func main() {
 	log.Println(chat.Choices[0].Message.Content)
 
 	res = append(res, resChat...)
+
 	for _, res := range res {
 		if _, err := builder.Srv.Presentations.BatchUpdate(builder.Presentation.PresentationId, &slides.BatchUpdatePresentationRequest{
 			Requests: []*slides.Request{res},

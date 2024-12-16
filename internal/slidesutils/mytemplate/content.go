@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"sort"
-	"time"
 
 	"github.com/owulveryck/gptslideshow/internal/slidesutils"
 	"github.com/owulveryck/gptslideshow/internal/structure"
@@ -91,15 +90,22 @@ func (b *Builder) CreateSlideTitleSubtitleBody(ctx context.Context, slide struct
 		// Compare the priorities of the two elements
 		return priority(textRequests[i]) < priority(textRequests[j])
 	})
-
-	for _, textRequests := range textRequests {
-		// Execute the batch update request to insert text into the placeholders.
-		if _, err := b.Srv.Presentations.BatchUpdate(b.Presentation.PresentationId, &slides.BatchUpdatePresentationRequest{
-			Requests: []*slides.Request{textRequests},
-		}).Context(ctx).Do(); err != nil {
-			return fmt.Errorf("failed to insert text: %w", err)
-		}
-		time.Sleep(10 * time.Millisecond)
+	if _, err := b.Srv.Presentations.BatchUpdate(b.Presentation.PresentationId, &slides.BatchUpdatePresentationRequest{
+		Requests: textRequests,
+	}).Context(ctx).Do(); err != nil {
+		return fmt.Errorf("failed to insert text: %w", err)
 	}
+
+	/*
+		for _, textRequests := range textRequests {
+			// Execute the batch update request to insert text into the placeholders.
+			if _, err := b.Srv.Presentations.BatchUpdate(b.Presentation.PresentationId, &slides.BatchUpdatePresentationRequest{
+				Requests: []*slides.Request{textRequests},
+			}).Context(ctx).Do(); err != nil {
+				return fmt.Errorf("failed to insert text: %w", err)
+			}
+			time.Sleep(10 * time.Millisecond)
+		}
+	*/
 	return nil
 }
