@@ -7,7 +7,7 @@ import (
 	drive "google.golang.org/api/drive/v3"
 
 	"github.com/owulveryck/gptslideshow/config"
-	"github.com/owulveryck/gptslideshow/internal/ai"
+	"github.com/owulveryck/gptslideshow/internal/ai/openai"
 	"github.com/owulveryck/gptslideshow/internal/driveutils"
 	"github.com/owulveryck/gptslideshow/internal/slidesutils/mytemplate"
 )
@@ -22,7 +22,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	openaiClient := ai.NewAI()
+	openaiClient := openai.NewAI()
 
 	// Initialize Google services
 	client := initGoogleClient()

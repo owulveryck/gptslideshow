@@ -14,9 +14,9 @@ import (
 	"github.com/owulveryck/gptslideshow/internal/structure"
 )
 
-func generateSlides(ctx context.Context, openaiClient *ai.AI, prompt string, content []byte) *structure.Presentation {
+func generateSlides(ctx context.Context, aiClient ai.AIInterface, prompt string, content []byte) *structure.Presentation {
 	saveContent("prompt-*.txt", []byte(prompt))
-	presentationData, err := openaiClient.GeneratePresentationFromText(ctx, prompt, content)
+	presentationData, err := aiClient.GeneratePresentationFromText(ctx, prompt, content)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,7 +30,7 @@ func generateSlides(ctx context.Context, openaiClient *ai.AI, prompt string, con
 	return presentationData
 }
 
-func createPresentationSlides(ctx context.Context, builder slidesutils.BuilderInterface, driveSrv *drive.Service, openaiClient *ai.AI, withImages bool, presentationData *structure.Presentation) error {
+func createPresentationSlides(ctx context.Context, builder slidesutils.BuilderInterface, driveSrv *drive.Service, aiClient ai.AIInterface, withImages bool, presentationData *structure.Presentation) error {
 	err := builder.CreateCover(ctx, presentationData.Title, presentationData.Subtitle)
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func createPresentationSlides(ctx context.Context, builder slidesutils.BuilderIn
 			}
 			if withImages {
 				// Generate the illustration
-				img, err := openaiClient.GenerateImageFromText(ctx, slide.Body)
+				img, err := aiClient.GenerateImageFromText(ctx, slide.Body)
 				if err != nil {
 					return err
 				}

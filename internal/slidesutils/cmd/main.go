@@ -88,7 +88,7 @@ func main() {
 		{Content: "and this is back to a level of indentation of zero", Style: normal, IndentationLevel: 0, Paragraph: 6},
 		{Content: "and this is back to a level of indentation of zero", Style: bold, IndentationLevel: 0, Paragraph: 7},
 	}
-	requests := slidesutils.Format(content, bodyPlaceholderID)
+	requests := slidesutils.InsertMarkdownContent(content, bodyPlaceholderID)
 	enc := json.NewEncoder(os.Stdout)
 	enc.Encode(requests)
 

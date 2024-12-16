@@ -44,12 +44,18 @@ func main() {
 	var content string
 	var bodyID string
 	for !found {
-		currentSlide, _ := getSlideByID(builder.Presentation.PresentationId, builder.CurrentSlide.ObjectId, builder.Srv)
-		// Find the BODY placeholder
-		for _, element := range currentSlide.PageElements {
-			var currentText string
-			if element.Shape != nil && element.Shape.Placeholder != nil {
-				if element.Shape.Placeholder.Type == "BODY" { // Use the correct constant if available
+		//	currentSlide, _ := getSlideByID(builder.Presentation.PresentationId, builder.CurrentSlide.ObjectId, builder.Srv)
+		for _, currentSlide := range builder.Presentation.Slides {
+			if found {
+				break
+			}
+			// Find the BODY placeholder
+			for _, element := range currentSlide.PageElements {
+				if found {
+					break
+				}
+				var currentText string
+				if element.Shape != nil && element.Shape.Placeholder != nil {
 					bodyID = element.ObjectId
 					// Check if Text and TextElements exist
 					if element.Shape != nil && element.Shape.Text != nil && len(element.Shape.Text.TextElements) > 0 {
@@ -58,8 +64,8 @@ func main() {
 							if textRun != nil {
 								currentText += textRun.Content
 								fmt.Printf("Text: %s\n", currentText)
-								if strings.Contains(currentText, "GoGoGo") {
-									content = strings.Replace(currentText, "GoGoGo", "", -1)
+								if strings.Contains(currentText, "CHATGPT:") {
+									content = strings.Replace(currentText, "CHATGPT:", "", -1)
 									found = true
 									break
 								}
@@ -73,7 +79,6 @@ func main() {
 		}
 		time.Sleep(2 * time.Second)
 	}
-	log.Println(content)
 	textRequests := []*slides.Request{
 		{
 			DeleteText: &slides.DeleteTextRequest{

@@ -1,5 +1,6 @@
 credentials.json
+credentials*.json
 .envrc
 gptslides
 gptslideshow
-
+slidegpt/slidegpt

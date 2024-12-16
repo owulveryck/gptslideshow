@@ -8,7 +8,7 @@ import (
 	"github.com/owulveryck/gptslideshow/internal/ai"
 )
 
-func readContent(ctx context.Context, openaiClient *ai.AI, textfile, audiofile *string) []byte {
+func readContent(ctx context.Context, aiClient ai.AIInterface, textfile, audiofile *string) []byte {
 	var content []byte
 	var err error
 
@@ -20,7 +20,7 @@ func readContent(ctx context.Context, openaiClient *ai.AI, textfile, audiofile *
 	}
 
 	if *audiofile != "" {
-		b, err := openaiClient.ExtractTextFromAudio(ctx, *audiofile)
+		b, err := aiClient.ExtractTextFromAudio(ctx, *audiofile)
 		if err != nil {
 			log.Fatal(err)
 		}
