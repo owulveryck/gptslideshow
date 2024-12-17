@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"strings"
 
@@ -27,18 +28,34 @@ func main() {
 	presentationService := slides.NewPresentationsService(srv)
 	presentationPageService := slides.NewPresentationsPagesService(srv)
 	// Retrieve the presentation
-	presentation, err := presentationService.Get(*presentationID).Do()
-	if err != nil {
-		log.Fatalf("Unable to retrieve presentation: %v", err)
-	}
 	// Iterate through each slide (page) in the presentation
 	for {
+		presentation, err := presentationService.Get(*presentationID).Do()
+		if err != nil {
+			log.Fatalf("Unable to retrieve presentation: %v", err)
+		}
+		var contenuTotal string
+		for slideNumber, slide := range presentation.Slides {
+			slide, err := presentationPageService.Get(*presentationID, slide.ObjectId).Do()
+			if err != nil {
+				log.Fatalf("Unable to retrieve current slide: %v", err)
+			}
+			contenuTotal = fmt.Sprintf("## Slide %v\n\n", slideNumber)
+			for _, element := range slide.PageElements {
+				if element.Shape != nil && element.Shape.Text != nil {
+					// Extract text content from shapes
+					textContent := extractTextFromShape(element.Shape.Text)
+					contenuTotal += textContent
+				}
+			}
+		}
+
+		// Get the total content
 		for _, slide := range presentation.Slides {
 			slide, err := presentationPageService.Get(*presentationID, slide.ObjectId).Do()
 			if err != nil {
 				log.Fatalf("Unable to retrieve current slide: %v", err)
 			}
-
 			// Iterate through all page elements (shapes, images, etc.)
 			for _, element := range slide.PageElements {
 				if element.Shape != nil && element.Shape.Text != nil {
@@ -57,6 +74,10 @@ func main() {
 						}
 					case strings.Contains(textContent, "@chatgpt"):
 						textContent = strings.ReplaceAll(textContent, "@chatgpt", "")
+						if strings.Contains(textContent, "@withContext") {
+							textContent = strings.ReplaceAll(textContent, "@withContent", "")
+							textContent += "\n\n" + contenuTotal
+						}
 						result, err := openaiClient.SimpleQuery(ctx, textContent)
 						if err != nil {
 							log.Fatal(err)
