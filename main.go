@@ -26,14 +26,14 @@ func main() {
 
 	// Initialize Google services
 	client := initGoogleClient()
-	slidesSrv := initSlidesService(client)
+	slidesSrv := initSlidesService(ctx, client)
 	var driveSrv *drive.Service
 
 	// Read content from file or audio
 	content := readContent(ctx, openaiClient, textfile, audiofile)
 
 	// Handle template copy if specified
-	driveSrv = initDriveService(client)
+	driveSrv = initDriveService(ctx, client)
 	if *fromTemplate != "" {
 		p := handleTemplateCopy(ctx, driveSrv, *fromTemplate)
 		presentationId = &p

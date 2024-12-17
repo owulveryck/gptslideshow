@@ -32,4 +32,6 @@ type AIInterface interface {
 	// The prompt parameter provides the description of the image to generate.
 	// It returns the generated image as an image.Image object, and any error encountered.
 	GenerateImageFromText(ctx context.Context, prompt string) (image.Image, error)
+	// SimpleQuery to the AI model
+	SimpleQuery(ctx context.Context, prompt string) (string, error)
 }

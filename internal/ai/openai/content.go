@@ -5,12 +5,38 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/openai/openai-go"
 
 	"github.com/owulveryck/gptslideshow/config"
 	"github.com/owulveryck/gptslideshow/internal/structure"
 )
+
+// sanitize remove unwanted characters (example: control characters)
+func sanitize(input string) string {
+	return strings.Map(func(r rune) rune {
+		if r < 32 { // Remove control characters
+			return -1
+		}
+		return r
+	}, input)
+}
+
+func (ai *AI) SimpleQuery(ctx context.Context, prompt string) (string, error) {
+	completion, err := ai.Client.Chat.Completions.New(ctx, openai.ChatCompletionNewParams{
+		Messages: openai.F([]openai.ChatCompletionMessageParamUnion{
+			openai.UserMessage(sanitize(prompt)),
+		}),
+		Seed:  openai.Int(1),
+		Model: openai.F(config.ConfigInstance.OpenAIModel),
+	})
+	if err != nil {
+		return "", fmt.Errorf("Error in the chat request: %v\nprompt was:\n%v", err, prompt)
+	}
+
+	return completion.Choices[0].Message.Content, nil
+}
 
 // GenerateSlide
 func (ai *AI) GenerateSlide(ctx context.Context, preprompt string, content []byte) (*structure.Slide, error) {

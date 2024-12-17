@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -8,6 +9,7 @@ import (
 	"github.com/owulveryck/gptslideshow/internal/gcputils"
 	"golang.org/x/oauth2/google"
 	drive "google.golang.org/api/drive/v3"
+	"google.golang.org/api/option"
 	slides "google.golang.org/api/slides/v1"
 )
 
@@ -25,8 +27,9 @@ func initGoogleClient() *http.Client {
 	return gcputils.GetClient(config)
 }
 
-func initSlidesService(client *http.Client) *slides.Service {
-	slidesSrv, err := slides.New(client)
+func initSlidesService(ctx context.Context, client *http.Client) *slides.Service {
+	// slidesSrv, err := slides.New(client)
+	slidesSrv, err := slides.NewService(ctx, option.WithHTTPClient(client))
 	if err != nil {
 		log.Fatalf("Unable to retrieve Slides client: %v", err)
 	}

@@ -149,6 +149,8 @@ func SortRequests(requests []*slides.Request) {
 		// Define the priority for each type
 		priority := func(req *slides.Request) int {
 			switch {
+			case req.DeleteText != nil:
+				return 0 // Highest priority
 			case req.InsertText != nil:
 				return 1 // Highest priority
 			case req.UpdateTextStyle != nil:
