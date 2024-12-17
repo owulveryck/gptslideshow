@@ -9,9 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/openai/openai-go"
 	"github.com/owulveryck/gptslideshow/config"
-	"github.com/owulveryck/gptslideshow/internal/ai"
+	"github.com/owulveryck/gptslideshow/internal/ai/openai"
 	"github.com/owulveryck/gptslideshow/internal/slidesutils"
 	"github.com/owulveryck/gptslideshow/internal/slidesutils/mytemplate"
 	"github.com/owulveryck/gptslideshow/internal/structure"
@@ -24,7 +23,7 @@ func main() {
 
 	flag.Parse()
 	ctx := context.Background()
-	openaiClient := ai.NewAI()
+	openaiClient := openai.NewAI()
 
 	// Initialize Google services
 	client := initGoogleClient()
