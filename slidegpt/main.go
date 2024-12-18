@@ -8,20 +8,34 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kelseyhightower/envconfig"
 	"github.com/owulveryck/gptslideshow/internal/ai/ollama"
 	"github.com/owulveryck/gptslideshow/internal/ai/openai"
+	vertex "github.com/owulveryck/gptslideshow/internal/ai/vertexai"
 	"github.com/owulveryck/gptslideshow/internal/slidesutils"
 	"google.golang.org/api/slides/v1"
 )
 
+type configuration struct {
+	GCPPRoject  string `envconfig:"GCP_PROJECT" required:"true"`
+	GeminiModel string `envconfig:"GEMINI_MODEL" default:"gemini-1.5-pro"`
+	GCPRegion   string `envconfig:"GCP_REGION" default:"us-central1"`
+}
+
 func main() {
 	// Parse command-line flags
 	presentationID := flag.String("id", "", "ID of the slide to update, empty means create a new one")
+	var config configuration
+	err := envconfig.Process("", &config)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	flag.Parse()
 	ctx := context.Background()
 	openaiClient := openai.NewAI()
 	ollamaClient := ollama.NewAI()
+	vertexAIClient := vertex.NewAI(ctx, config.GCPPRoject, config.GCPRegion, config.GeminiModel)
 
 	// Initialize Google services
 	client := initGoogleClient()
@@ -30,22 +44,21 @@ func main() {
 	presentationPageService := slides.NewPresentationsPagesService(srv)
 	// Retrieve the presentation
 	// Iterate through each slide (page) in the presentation
+
 	fmt.Println("Scanning document")
-	presentationRevision := ""
+	h := &helper{
+		presentationID:          *presentationID,
+		presentationService:     presentationService,
+		presentationPageService: presentationPageService,
+	}
 	for {
-		presentation, err := presentationService.Get(*presentationID).Do()
-		if err != nil {
-			log.Fatalf("Unable to retrieve presentation: %v", err)
-		}
-		if presentation.RevisionId == presentationRevision {
+		must(h.updatePresentationPointer())
+		if !h.presentationHasChanged() {
 			time.Sleep(1 * time.Second)
 			continue
 		}
-		log.Println("Presentation has changed...")
-		presentationRevision = presentation.RevisionId
-
 		// Get the total content
-		for _, slide := range presentation.Slides {
+		for _, slide := range h.presentation.Slides {
 			// printProgress(i, len(presentation.Slides))
 			slide, err := presentationPageService.Get(*presentationID, slide.ObjectId).Do()
 			if err != nil {
@@ -62,6 +75,10 @@ func main() {
 						img, err := openaiClient.GenerateImageURLFromText(ctx, textContent)
 						if err != nil {
 							log.Println(err)
+						}
+						if img == "" {
+							log.Println("No image generated")
+							continue
 						}
 						requests := processText(element.ObjectId, textContent)
 						b, _ := element.Size.MarshalJSON()
@@ -84,6 +101,21 @@ func main() {
 						if err != nil {
 							log.Fatalf("unable to update text: %v", err)
 						}
+					case strings.Contains(textContent, "@gemini"):
+						textContent = strings.ReplaceAll(textContent, "@gemini", "")
+						result, err := vertexAIClient.SimpleQuery(ctx, textContent)
+						if err != nil {
+							log.Fatal(err)
+						}
+						requests := processText(element.ObjectId, result)
+						// Execute the batch update
+						_, err = presentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
+							Requests: requests,
+						}).Do()
+						if err != nil {
+							log.Fatalf("unable to update text: %v", err)
+						}
+
 					case strings.Contains(textContent, "@format"):
 						textContent = strings.ReplaceAll(textContent, "@format", "")
 						requests := processText(element.ObjectId, textContent)
