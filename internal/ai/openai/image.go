@@ -49,3 +49,29 @@ func (ai *AI) GenerateImageFromText(ctx context.Context, prompt string) (image.I
 	// Return the decoded image.
 	return img, nil
 }
+
+// GenerateImageFromText generates a 256x256 image based on the provided text prompt.
+// It communicates with OpenAI's API to create the image and returns it as an image.Image object.
+//
+// Parameters:
+//   - ctx: The context for managing request deadlines and cancellation signals.
+//   - prompt: A string containing the description of the image to generate.
+//
+// Returns:
+//   - An image.Image object representing the generated image.
+//   - An error if the image generation or processing fails.
+func (ai *AI) GenerateImageURLFromText(ctx context.Context, prompt string) (string, error) {
+	// Request image generation from OpenAI's API with specified parameters.
+	response, err := ai.Client.Images.Generate(ctx, openai.ImageGenerateParams{
+		Prompt:         openai.String("generate an illustration based on those elements, the illustration should not contain any text: \n\n" + prompt),
+		Model:          openai.F(openai.ImageModelDallE3),
+		ResponseFormat: openai.F(openai.ImageGenerateParamsResponseFormatURL),
+		N:              openai.Int(1),
+		Size:           openai.F(openai.ImageGenerateParamsSize1024x1024),
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to generate image: %w", err)
+	}
+	// Return the decoded image.
+	return response.Data[0].URL, nil
+}

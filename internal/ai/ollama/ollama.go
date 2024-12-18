@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/ollama/ollama/api"
+	"github.com/owulveryck/gptslideshow/config"
 	"github.com/owulveryck/gptslideshow/internal/structure"
 )
 
@@ -53,7 +54,7 @@ func NewAI() *AI {
 	}
 	return &AI{
 		Client: client,
-		Model:  "llama3.2",
+		Model:  config.ConfigInstance.OllamaModel,
 	}
 }
 
@@ -76,7 +77,7 @@ func (ai *AI) SimpleQuery(ctx context.Context, prompt string) (string, error) {
 
 	err := ai.Client.Generate(ctx, req, respFunc)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	return reply, nil
 }

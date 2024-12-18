@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/owulveryck/gptslideshow/internal/ai/ollama"
 	"github.com/owulveryck/gptslideshow/internal/ai/openai"
@@ -29,29 +30,23 @@ func main() {
 	presentationPageService := slides.NewPresentationsPagesService(srv)
 	// Retrieve the presentation
 	// Iterate through each slide (page) in the presentation
+	fmt.Println("Scanning document")
+	presentationRevision := ""
 	for {
 		presentation, err := presentationService.Get(*presentationID).Do()
 		if err != nil {
 			log.Fatalf("Unable to retrieve presentation: %v", err)
 		}
-		var contenuTotal string
-		for slideNumber, slide := range presentation.Slides {
-			slide, err := presentationPageService.Get(*presentationID, slide.ObjectId).Do()
-			if err != nil {
-				log.Fatalf("Unable to retrieve current slide: %v", err)
-			}
-			contenuTotal = fmt.Sprintf("## Slide %v\n\n", slideNumber)
-			for _, element := range slide.PageElements {
-				if element.Shape != nil && element.Shape.Text != nil {
-					// Extract text content from shapes
-					textContent := extractTextFromShape(element.Shape.Text)
-					contenuTotal += textContent
-				}
-			}
+		if presentation.RevisionId == presentationRevision {
+			time.Sleep(1 * time.Second)
+			continue
 		}
+		log.Println("Presentation has changed...")
+		presentationRevision = presentation.RevisionId
 
 		// Get the total content
 		for _, slide := range presentation.Slides {
+			// printProgress(i, len(presentation.Slides))
 			slide, err := presentationPageService.Get(*presentationID, slide.ObjectId).Do()
 			if err != nil {
 				log.Fatalf("Unable to retrieve current slide: %v", err)
@@ -62,6 +57,33 @@ func main() {
 					// Extract text content from shapes
 					textContent := extractTextFromShape(element.Shape.Text)
 					switch {
+					case strings.Contains(textContent, "@dalle"):
+						textContent = strings.ReplaceAll(textContent, "@dalle", "")
+						img, err := openaiClient.GenerateImageURLFromText(ctx, textContent)
+						if err != nil {
+							log.Println(err)
+						}
+						requests := processText(element.ObjectId, textContent)
+						b, _ := element.Size.MarshalJSON()
+						fmt.Printf("%s\n", b)
+						b, _ = element.Transform.MarshalJSON()
+						fmt.Printf("%s\n", b)
+						imgRequest := slides.CreateImageRequest{
+							ElementProperties: &slides.PageElementProperties{
+								PageObjectId: slide.ObjectId,
+								Size:         element.Size,
+								Transform:    element.Transform,
+							},
+							Url:             img,
+							ForceSendFields: []string{},
+							NullFields:      []string{},
+						}
+						_, err = presentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
+							Requests: append(requests, &slides.Request{CreateImage: &imgRequest}),
+						}).Do()
+						if err != nil {
+							log.Fatalf("unable to update text: %v", err)
+						}
 					case strings.Contains(textContent, "@format"):
 						textContent = strings.ReplaceAll(textContent, "@format", "")
 						requests := processText(element.ObjectId, textContent)
@@ -76,7 +98,6 @@ func main() {
 						textContent = strings.ReplaceAll(textContent, "@chatgpt", "")
 						if strings.Contains(textContent, "@withContext") {
 							textContent = strings.ReplaceAll(textContent, "@withContent", "")
-							textContent += "\n\n" + contenuTotal
 						}
 						result, err := openaiClient.SimpleQuery(ctx, textContent)
 						if err != nil {
