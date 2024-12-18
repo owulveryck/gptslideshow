@@ -53,7 +53,7 @@ func (h *helper) presentationHasChanged() bool {
 }
 
 // Create an iterator for slides in the current presentation
-func (h *helper) Slides([]*slides.Page) iter.Seq[*slides.Page] {
+func (h *helper) Slides() iter.Seq[*slides.Page] {
 	return func(yield func(*slides.Page) bool) {
 		for _, s := range h.presentation.Slides {
 			slide, err := h.presentationPageService.Get(h.presentationID, s.ObjectId).Do()

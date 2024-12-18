@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
-	"github.com/owulveryck/gptslideshow/internal/ai/ollama"
 	"github.com/owulveryck/gptslideshow/internal/ai/openai"
 	vertex "github.com/owulveryck/gptslideshow/internal/ai/vertexai"
 	"github.com/owulveryck/gptslideshow/internal/slidesutils"
@@ -34,22 +33,18 @@ func main() {
 	flag.Parse()
 	ctx := context.Background()
 	openaiClient := openai.NewAI()
-	ollamaClient := ollama.NewAI()
+	//	ollamaClient := ollama.NewAI()
 	vertexAIClient := vertex.NewAI(ctx, config.GCPPRoject, config.GCPRegion, config.GeminiModel)
 
 	// Initialize Google services
 	client := initGoogleClient()
 	srv := initSlidesService(ctx, client)
-	presentationService := slides.NewPresentationsService(srv)
-	presentationPageService := slides.NewPresentationsPagesService(srv)
-	// Retrieve the presentation
-	// Iterate through each slide (page) in the presentation
 
 	fmt.Println("Scanning document")
 	h := &helper{
 		presentationID:          *presentationID,
-		presentationService:     presentationService,
-		presentationPageService: presentationPageService,
+		presentationService:     slides.NewPresentationsService(srv),
+		presentationPageService: slides.NewPresentationsPagesService(srv),
 	}
 	for {
 		must(h.updatePresentationPointer())
@@ -57,14 +52,7 @@ func main() {
 			time.Sleep(1 * time.Second)
 			continue
 		}
-		// Get the total content
-		for _, slide := range h.presentation.Slides {
-			// printProgress(i, len(presentation.Slides))
-			slide, err := presentationPageService.Get(*presentationID, slide.ObjectId).Do()
-			if err != nil {
-				log.Fatalf("Unable to retrieve current slide: %v", err)
-			}
-			// Iterate through all page elements (shapes, images, etc.)
+		for slide := range h.Slides() {
 			for _, element := range slide.PageElements {
 				if element.Shape != nil && element.Shape.Text != nil {
 					// Extract text content from shapes
@@ -95,68 +83,39 @@ func main() {
 							ForceSendFields: []string{},
 							NullFields:      []string{},
 						}
-						_, err = presentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
+						_, err = h.presentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
 							Requests: append(requests, &slides.Request{CreateImage: &imgRequest}),
 						}).Do()
 						if err != nil {
 							log.Fatalf("unable to update text: %v", err)
 						}
 					case strings.Contains(textContent, "@gemini"):
-						textContent = strings.ReplaceAll(textContent, "@gemini", "")
-						result, err := vertexAIClient.SimpleQuery(ctx, textContent)
+						err := h.updateFromAI(ctx, vertexAIClient, element.ObjectId, textContent, "@gemini")
 						if err != nil {
-							log.Fatal(err)
+							log.Println(err)
 						}
-						requests := processText(element.ObjectId, result)
-						// Execute the batch update
-						_, err = presentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
-							Requests: requests,
-						}).Do()
-						if err != nil {
-							log.Fatalf("unable to update text: %v", err)
-						}
-
 					case strings.Contains(textContent, "@format"):
 						textContent = strings.ReplaceAll(textContent, "@format", "")
 						requests := processText(element.ObjectId, textContent)
 						// Execute the batch update
-						_, err = presentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
+						_, err = h.presentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
 							Requests: requests,
 						}).Do()
 						if err != nil {
 							log.Fatalf("unable to update text: %v", err)
 						}
 					case strings.Contains(textContent, "@chatgpt"):
-						textContent = strings.ReplaceAll(textContent, "@chatgpt", "")
-						if strings.Contains(textContent, "@withContext") {
-							textContent = strings.ReplaceAll(textContent, "@withContent", "")
-						}
-						result, err := openaiClient.SimpleQuery(ctx, textContent)
+						err := h.updateFromAI(ctx, openaiClient, element.ObjectId, textContent, "@chatgpt")
 						if err != nil {
-							log.Fatal(err)
+							log.Println(err)
 						}
-						requests := processText(element.ObjectId, result)
-						// Execute the batch update
-						_, err = presentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
-							Requests: requests,
-						}).Do()
-						if err != nil {
-							log.Fatalf("unable to update text: %v", err)
-						}
-					case strings.Contains(textContent, "@ollama"):
-						textContent = strings.ReplaceAll(textContent, "@ollama", "")
-						result, err := ollamaClient.SimpleQuery(ctx, textContent)
-						if err != nil {
-							log.Fatal(err)
-						}
-						requests := processText(element.ObjectId, result)
-						// Execute the batch update
-						_, err = presentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
-							Requests: requests,
-						}).Do()
-						if err != nil {
-							log.Fatalf("unable to update text: %v", err)
-						}
+						/*
+							case strings.Contains(textContent, "@ollama"):
+								err := h.updateFromAI(ctx, ollamaClient, element.ObjectId, textContent, "@ollama")
+								if err != nil {
+									log.Println(err)
+								}
+						*/
 					}
 				}
 			}
