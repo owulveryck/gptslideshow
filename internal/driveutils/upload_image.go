@@ -29,8 +29,6 @@ func UploadImage(ctx context.Context, srvDrive *drive.Service, img image.Image, 
 		return "", err
 	}
 
-	fmt.Printf("File uploaded successfully. File ID: %s\n", uploadedFile.Id)
-
 	// Make the file public by setting the permission
 	_, err = srvDrive.Permissions.Create(uploadedFile.Id, &drive.Permission{
 		Type: "anyone",

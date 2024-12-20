@@ -8,9 +8,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/owulveryck/gptslideshow/internal/ai/openai"
 	vertex "github.com/owulveryck/gptslideshow/internal/ai/vertexai"
+	"github.com/owulveryck/gptslideshow/internal/driveutils"
 	"github.com/owulveryck/gptslideshow/internal/slidesutils"
 	"google.golang.org/api/slides/v1"
 )
@@ -22,6 +24,7 @@ type configuration struct {
 }
 
 func main() {
+	//	go startServer()
 	// Parse command-line flags
 	presentationID := flag.String("id", "", "ID of the slide to update, empty means create a new one")
 	var config configuration
@@ -37,8 +40,10 @@ func main() {
 	vertexAIClient := vertex.NewAI(ctx, config.GCPPRoject, config.GCPRegion, config.GeminiModel)
 
 	// Initialize Google services
-	client := initGoogleClient()
+	client := initGoogleClient("../credentials.json")
+	clientPerso := initGoogleClientPerso("../credentials_perso.json")
 	srv := initSlidesService(ctx, client)
+	driveSrv := initDriveService(clientPerso)
 
 	fmt.Println("Scanning document")
 	h := &helper{
@@ -53,6 +58,10 @@ func main() {
 			continue
 		}
 		for slide := range h.Slides() {
+			// BUG for an unknown reason (yet) sometimes the slides seems to be garbage collected
+			if slide == nil {
+				continue
+			}
 			for _, element := range slide.PageElements {
 				if element.Shape != nil && element.Shape.Text != nil {
 					// Extract text content from shapes
@@ -89,6 +98,39 @@ func main() {
 						if err != nil {
 							log.Fatalf("unable to update text: %v", err)
 						}
+					case strings.Contains(textContent, "@image"):
+						textContent = strings.ReplaceAll(textContent, "@image", "")
+						img, err := vertexAIClient.GenerateImageFromText(ctx, textContent)
+						if err != nil {
+							log.Println(err)
+							continue
+						}
+						name := uuid.New().String() + ".png"
+						imageName, err := driveutils.UploadImage(ctx, driveSrv, img, name)
+						if err != nil {
+							log.Println(err)
+							continue
+						}
+						requests := processText(element.ObjectId, "")
+						// Execute the batch update
+
+						imgRequest := slides.CreateImageRequest{
+							ElementProperties: &slides.PageElementProperties{
+								PageObjectId: slide.ObjectId,
+								Size:         element.Size,
+								Transform:    element.Transform,
+							},
+							Url:             imageName,
+							ForceSendFields: []string{},
+							NullFields:      []string{},
+						}
+						_, err = h.presentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
+							Requests: append(requests, &slides.Request{CreateImage: &imgRequest}),
+						}).Do()
+						if err != nil {
+							log.Printf("unable to update text: %v", err)
+						}
+
 					case strings.Contains(textContent, "@gemini"):
 						err := h.updateFromAI(ctx, vertexAIClient, element.ObjectId, textContent, "@gemini")
 						if err != nil {

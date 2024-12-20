@@ -14,6 +14,17 @@ import (
 )
 
 // GetClient retrieves a token, saves it, and returns the generated client.
+func GetClientPerso(config *oauth2.Config) *http.Client {
+	tokFile := tokenCacheFilePerso()
+	tok, err := tokenFromFile(tokFile)
+	if err != nil {
+		tok = getTokenFromWeb(config)
+		saveToken(tokFile, tok)
+	}
+	return config.Client(context.Background(), tok)
+}
+
+// GetClient retrieves a token, saves it, and returns the generated client.
 func GetClient(config *oauth2.Config) *http.Client {
 	tokFile := tokenCacheFile()
 	tok, err := tokenFromFile(tokFile)
@@ -62,6 +73,16 @@ func saveToken(path string, token *oauth2.Token) {
 	}
 	defer f.Close()
 	json.NewEncoder(f).Encode(token)
+}
+
+func tokenCacheFilePerso() string {
+	usr, err := user.Current()
+	if err != nil {
+		log.Fatalf("Unable to determine current user: %v", err)
+	}
+	tokenCacheDir := filepath.Join(usr.HomeDir, ".credentials")
+	os.MkdirAll(tokenCacheDir, 0700)
+	return filepath.Join(tokenCacheDir, "drive.googleapis.com-go-quickstart.json")
 }
 
 // tokenCacheFile returns the path to the token cache file.
