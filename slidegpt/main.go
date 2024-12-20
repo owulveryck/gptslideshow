@@ -56,18 +56,19 @@ func main() {
 	driveSrv := gcputils.InitDriveService(ctx, clientPerso)
 
 	fmt.Println("Scanning document")
-	h := &helper{
-		presentationID:          *presentationID,
-		presentationService:     slides.NewPresentationsService(srv),
-		presentationPageService: slides.NewPresentationsPagesService(srv),
+	p := &slidesutils.Presentation{
+		PresentationID:          *presentationID,
+		PresentationService:     slides.NewPresentationsService(srv),
+		PresentationPageService: slides.NewPresentationsPagesService(srv),
 	}
 	for {
-		must(h.updatePresentationPointer())
-		if !h.presentationHasChanged() {
+		must(p.UpdatePresentationPointer())
+		if !p.HasChanged() {
 			time.Sleep(1 * time.Second)
 			continue
 		}
-		for slide := range h.Slides() {
+		slideNumber := 0
+		for slide := range p.Slides() {
 			// BUG for an unknown reason (yet) sometimes the slides seems to be garbage collected
 			if slide == nil {
 				continue
@@ -76,6 +77,8 @@ func main() {
 				if element.Shape != nil && element.Shape.Text != nil {
 					// Extract text content from shapes
 					textContent := extractTextFromShape(element.Shape.Text)
+					fmt.Printf("## Slide %v\n\n%v", slideNumber, textContent)
+					slideNumber++
 					switch {
 					case strings.Contains(textContent, "@dalle"):
 						textContent = strings.ReplaceAll(textContent, "@dalle", "")
@@ -102,9 +105,7 @@ func main() {
 							ForceSendFields: []string{},
 							NullFields:      []string{},
 						}
-						_, err = h.presentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
-							Requests: append(requests, &slides.Request{CreateImage: &imgRequest}),
-						}).Do()
+						err = p.Update(ctx, append(requests, &slides.Request{CreateImage: &imgRequest}))
 						if err != nil {
 							log.Fatalf("unable to update text: %v", err)
 						}
@@ -134,15 +135,13 @@ func main() {
 							ForceSendFields: []string{},
 							NullFields:      []string{},
 						}
-						_, err = h.presentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
-							Requests: append(requests, &slides.Request{CreateImage: &imgRequest}),
-						}).Do()
+						err = p.Update(ctx, append(requests, &slides.Request{CreateImage: &imgRequest}))
 						if err != nil {
 							log.Printf("unable to update text: %v", err)
 						}
 
 					case strings.Contains(textContent, "@gemini"):
-						err := h.updateFromAI(ctx, vertexAIClient, element.ObjectId, textContent, "@gemini")
+						err := p.UpdateFromAI(ctx, vertexAIClient, element.ObjectId, textContent, "@gemini")
 						if err != nil {
 							log.Println(err)
 						}
@@ -150,14 +149,14 @@ func main() {
 						textContent = strings.ReplaceAll(textContent, "@format", "")
 						requests := processText(element.ObjectId, textContent)
 						// Execute the batch update
-						_, err = h.presentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
+						_, err = p.PresentationService.BatchUpdate(*presentationID, &slides.BatchUpdatePresentationRequest{
 							Requests: requests,
 						}).Do()
 						if err != nil {
 							log.Fatalf("unable to update text: %v", err)
 						}
 					case strings.Contains(textContent, "@chatgpt"):
-						err := h.updateFromAI(ctx, openaiClient, element.ObjectId, textContent, "@chatgpt")
+						err := p.UpdateFromAI(ctx, openaiClient, element.ObjectId, textContent, "@chatgpt")
 						if err != nil {
 							log.Println(err)
 						}
