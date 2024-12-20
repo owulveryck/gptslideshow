@@ -1,13 +1,12 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
-	"os"
+	"path/filepath"
 
-	"golang.org/x/oauth2/google"
-	drive "google.golang.org/api/drive/v3"
-	slides "google.golang.org/api/slides/v1"
+	"github.com/owulveryck/gptslideshow/internal/gcputils"
 )
 
 func main() {
@@ -16,26 +15,15 @@ func main() {
 
 	flag.Parse()
 
-	// Load client secret file
-	b, err := os.ReadFile("../../../credentials.json")
+	ctx := context.Background()
+	// Initialize Google services
+	cacheDir, err := gcputils.GetCredentialCacheDir()
 	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
+		log.Fatal(err)
 	}
 
-	// Initialize Google OAuth2 config
-	config, err := google.ConfigFromJSON(b, drive.DriveScope, slides.PresentationsScope)
-	if err != nil {
-		log.Fatalf("Unable to parse client secret file to config: %v", err)
-	}
-
-	// Get authenticated client
-	client := GetClient(config)
-
-	// Initialize Google Slides service
-	slidesSrv, err := slides.New(client)
-	if err != nil {
-		log.Fatalf("Unable to retrieve Slides client: %v", err)
-	}
+	client := gcputils.InitGoogleClient("../../../credentials.json", filepath.Join(cacheDir, "slides.googleapis.com-go-quickstart.json"))
+	slidesSrv := gcputils.InitSlidesService(ctx, client)
 
 	err = ListSlidesAndElements(slidesSrv, presentationId)
 	if err != nil {

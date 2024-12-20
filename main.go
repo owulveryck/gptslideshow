@@ -3,12 +3,14 @@ package main
 import (
 	"context"
 	"log"
+	"path/filepath"
 
 	drive "google.golang.org/api/drive/v3"
 
 	"github.com/owulveryck/gptslideshow/config"
 	"github.com/owulveryck/gptslideshow/internal/ai/openai"
 	"github.com/owulveryck/gptslideshow/internal/driveutils"
+	"github.com/owulveryck/gptslideshow/internal/gcputils"
 	"github.com/owulveryck/gptslideshow/internal/slidesutils/mytemplate"
 )
 
@@ -25,15 +27,21 @@ func main() {
 	openaiClient := openai.NewAI()
 
 	// Initialize Google services
-	client := initGoogleClient()
-	slidesSrv := initSlidesService(ctx, client)
+	cacheDir, err := gcputils.GetCredentialCacheDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	client := gcputils.InitGoogleClient("../credentials.json", filepath.Join(cacheDir, "slides.googleapis.com-go-quickstart.json"))
+	slidesSrv := gcputils.InitSlidesService(ctx, client)
+
 	var driveSrv *drive.Service
 
 	// Read content from file or audio
 	content := readContent(ctx, openaiClient, textfile, audiofile)
 
 	// Handle template copy if specified
-	driveSrv = initDriveService(ctx, client)
+	driveSrv = gcputils.InitDriveService(ctx, client)
 	if *fromTemplate != "" {
 		p := handleTemplateCopy(ctx, driveSrv, *fromTemplate)
 		presentationId = &p

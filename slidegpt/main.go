@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/owulveryck/gptslideshow/internal/ai/openai"
 	vertex "github.com/owulveryck/gptslideshow/internal/ai/vertexai"
 	"github.com/owulveryck/gptslideshow/internal/driveutils"
+	"github.com/owulveryck/gptslideshow/internal/gcputils"
 	"github.com/owulveryck/gptslideshow/internal/slidesutils"
 	"google.golang.org/api/slides/v1"
 )
@@ -35,15 +37,23 @@ func main() {
 
 	flag.Parse()
 	ctx := context.Background()
+
+	// Initialisation of the various clients
+
 	openaiClient := openai.NewAI()
 	//	ollamaClient := ollama.NewAI()
 	vertexAIClient := vertex.NewAI(ctx, config.GCPPRoject, config.GCPRegion, config.GeminiModel)
 
 	// Initialize Google services
-	client := initGoogleClient("../credentials.json")
-	clientPerso := initGoogleClientPerso("../credentials_perso.json")
-	srv := initSlidesService(ctx, client)
-	driveSrv := initDriveService(clientPerso)
+	cacheDir, err := gcputils.GetCredentialCacheDir()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	client := gcputils.InitGoogleClient("../credentials.json", filepath.Join(cacheDir, "slides.googleapis.com-go-quickstart.json"))
+	clientPerso := gcputils.InitGoogleClient("../credentials_perso.json", filepath.Join(cacheDir, "drive.googleapis.com-go-quickstart.json"))
+	srv := gcputils.InitSlidesService(ctx, client)
+	driveSrv := gcputils.InitDriveService(ctx, clientPerso)
 
 	fmt.Println("Scanning document")
 	h := &helper{
